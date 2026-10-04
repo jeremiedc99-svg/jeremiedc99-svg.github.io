@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="color-scheme" content="light"><meta name="theme-color" content="#0A6B5B"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="color-scheme" content="light"><meta name="theme-color" content="#389C9A"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Zero Gaspi</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
@@ -106,6 +106,23 @@ nav button,nav button.on{color:#fff}nav button.on{background:rgba(255,255,255,.2
 input,select{background:#fff;color:#0B3A30}
 .back{color:#fff;background:var(--g)}
 .logo{background:var(--g)}
+/* ===== Palette : BG #FFFFFF · teal #389C9A · jaune #FEDB71 · texte #1D1D1D · secondaire #F8F8F8 ===== */
+:root{--bg:#FFFFFF;--cd:#389C9A;--g:linear-gradient(145deg,#389C9A,#2B807E);--pr:#389C9A;--tx:#1D1D1D;--mu:#6B6B6B;--ac:#FEDB71;--ln:#ECECEC;--sh:0 6px 20px rgba(29,29,29,.08),0 1px 3px rgba(29,29,29,.05)}
+body{background:#EEF3F3}#app{background:#FFFFFF}
+.hero{background:var(--g)}.hero:after{background:rgba(254,219,113,.3)}.hero .mu{color:#E6F6F5}
+.card,.bar,nav{background:var(--g);--mu:#EAF7F6;border-color:rgba(255,255,255,.2)}
+nav{box-shadow:0 10px 30px rgba(43,128,126,.35)}nav button.on{background:rgba(255,255,255,.26)}
+.new{background:rgba(254,219,113,.5);color:#1D1D1D}.card .new,.bar .new{background:#FEDB71;color:#1D1D1D}
+.badge{background:#FEDB71;color:#1D1D1D;box-shadow:0 3px 8px rgba(254,219,113,.6)}.badge.out{background:#555;color:#fff;box-shadow:none}
+.btn{background:var(--g);color:#fff;box-shadow:0 6px 16px rgba(56,156,154,.35)}
+.card .btn,.bar .btn{background:#FEDB71;color:#1D1D1D;box-shadow:none}
+.btn.alt{color:#2B807E;border-color:#389C9A;background:none;box-shadow:none}.card .btn.dng{color:#FEDB71;border-color:#FEDB71}
+.chip.on{background:#FEDB71;color:#1D1D1D;border-color:#FEDB71;box-shadow:0 4px 10px rgba(254,219,113,.6)}
+input,select{background:#F8F8F8;color:#1D1D1D;border-color:#E4E4E4}input:focus,select:focus{outline:3px solid rgba(56,156,154,.3);border-color:#389C9A}
+.err{color:#C0392B}
+.stat:nth-child(1){background:#E3F3F2}.stat:nth-child(2){background:#FFF4CF}.stat:nth-child(3){background:#F8F8F8}.stat b{color:#2B807E}
+.bg i{background:#FFF4CF}
+.ob{background:radial-gradient(circle at 50% 18%,#D5EEED,transparent 60%)}.ob .em{background:linear-gradient(145deg,#fff,#E3F3F2)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body>
 <div id="app"><div id="main"></div><nav id="nav" aria-label="Navigation principale"></nav></div>
@@ -194,7 +211,7 @@ if(F.view=='l'){b.innerHTML=L.map(cardL).join('');return}
 b.innerHTML=`<svg viewBox="0 0 360 300" style="width:100%;border-radius:20px;background:#CFE6D2" role="img" aria-label="Carte des commerces">
 <path d="M0 220 Q120 170 200 230 T360 200 V300 H0Z" fill="#9CCDE0"/><path d="M0 100H360M120 0V300M250 0V220" stroke="#fff" stroke-width="10"/>
 <circle cx="180" cy="130" r="9" fill="#2a6df4" stroke="#fff" stroke-width="3"/>
-${L.map(s=>{const x=40+(s.id*83)%290,y=30+(s.id*61)%200;return`<g data-a="pin" data-i="${s.id}" tabindex="0" role="button" aria-label="${esc(s.n)}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="17" fill="${left(s)?'#D9481C':'#777'}" stroke="#fff" stroke-width="3"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="17">${s.e}</text></g>`}).join('')}</svg><div id="pc" style="margin-top:12px" class="mu">Touchez une épingle 📍</div>`}
+${L.map(s=>{const x=40+(s.id*83)%290,y=30+(s.id*61)%200;return`<g data-a="pin" data-i="${s.id}" tabindex="0" role="button" aria-label="${esc(s.n)}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="17" fill="${left(s)?'#389C9A':'#777'}" stroke="#fff" stroke-width="3"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="17">${s.e}</text></g>`}).join('')}</svg><div id="pc" style="margin-top:12px" class="mu">Touchez une épingle 📍</div>`}
 function Ff(){const L=S.filter(s=>db.favs.includes(s.id));
 return`<h1>Favoris ❤️</h1>`+(L.length?L.map(s=>cardL(s)+(left(s)?`<p class="mu" style="margin:-6px 0 12px 8px">🔔 Panier disponible chez ${esc(s.n)} !</p>`:'')).join(''):empty('💚','Aucun favori','Touchez le cœur d’un commerce pour être prévenu quand un panier est dispo.'))}
 let ot='u';
