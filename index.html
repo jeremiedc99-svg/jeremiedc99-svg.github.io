@@ -163,7 +163,7 @@ const trErr=m=>/Invalid login/i.test(m)?'E-mail ou mot de passe incorrect.':/alr
 const tdy=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const rg=(a,b)=>{const d=new Date(a),n=new Date(),k=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return(k==0?'Aujourd’hui':k==1?'Demain':d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'}))+' '+hm(a)+'–'+hm(b)};
 const MS=()=>S.filter(s=>s.ow==db.user.id);
-function mapShop(r){return{id:r.id,k:parseInt(r.id.slice(0,6),16),ow:r.owner_id,n:r.name,e:EM[r.category]||'🧺',c:r.category,p:r.price_rs,o:r.original_rs,st:r.stock,lo:r.locality||'Maurice',r:r.rating||4.5,t0:Date.parse(r.slot_start),t1:Date.parse(r.slot_end),ds:r.description||'Paniers surprise à prix réduit.',ad:r.address,al:r.allergens||'À préciser',h:parseInt(r.id.slice(0,4),16)%360,nw:1,v:r.vegetarian,ph:r.photos||[],cr:Date.parse(r.created_at)}}
+function mapShop(r){return{id:r.id,k:parseInt(r.id.slice(0,6),16),ow:r.owner_id,n:r.name,e:EM[r.category]||'🧺',c:r.category,p:r.price_rs,o:r.original_rs,st:r.stock,lo:r.locality||'Maurice',r:r.rating||4.5,t0:Date.parse(r.slot_start),t1:Date.parse(r.slot_end),ds:r.description||'Paniers surprise à prix réduit.',ad:r.address,lat:r.lat,lng:r.lng,al:r.allergens||'À préciser',h:parseInt(r.id.slice(0,4),16)%360,nw:1,v:r.vegetarian,ph:r.photos||[],cr:Date.parse(r.created_at)}}
 async function loadShops(){if(!sb)return;const{data,error}=await sb.from('shops').select('*').eq('active',true).order('created_at',{ascending:false});if(error){toast('Chargement des commerces impossible');return}S=data.map(mapShop)}
 async function loadMine(){const u=db.user.id,[o,f,m]=await Promise.all([sb.from('orders').select('*').eq('customer_id',u).order('created_at',{ascending:false}),sb.from('favorites').select('shop_id').eq('user_id',u),sb.from('merchants').select('*').eq('id',u).maybeSingle()]);
 db.orders=(o.data||[]).map(r=>({id:r.id,sid:r.shop_id,q:r.qty,t:r.total_rs,code:r.code,a:Date.parse(r.slot_start),b:Date.parse(r.slot_end),st:r.status=='upcoming'?'u':r.status=='done'?'d':'c',rv:r.rating}));
@@ -195,17 +195,27 @@ try{for(const f of files.slice(0,6-ph.length)){const d=await new Promise(r=>rz(f
 const{error}=await sb.from('shops').update({photos:ph}).eq('id',id);toast(error?'Photos non enregistrées':'📷 Photos publiées');await loadShops();R()}
 async function madd(){const n=$('#mn').value.trim(),p=+$('#mp').value,o=+$('#mo').value,q=+$('#mq').value,ad=$('#ma').value.trim(),h0=$('#mt0').value,h1=$('#mt1').value,E=x=>$('#er').textContent=x;
 if(!n||!(p>0)||!(o>p)||!(q>=1))return E('Indiquez un nom, un prix de panier inférieur à la valeur, et une quantité.');
-if(!okAd(ad))return E('Indiquez une adresse à Maurice : choisissez une ville ou un village dans la liste.');
+if(!okAd(ad)&&!(adSel&&adSel.label===ad))return E('Indiquez une adresse à Maurice : choisissez une ville ou un village dans la liste.');
 const mk=h=>new Date($('#mdt').value+'T'+h);
 if(!$('#mdt').value||!h0||!h1||mk(h1)<=mk(h0)||mk(h1)<=new Date())return E('Indiquez une date et un créneau de retrait valides (dans le futur).');
 const lo=MU.filter(x=>nz(ad).includes(nz(x))).sort((a,b)=>b.length-a.length)[0],btn=$('[data-a=madd]');btn.disabled=true;E('');
 try{const ph=[];for(const x of mTmp)ph.push(await upl(x,'new'));
-const{error}=await sb.from('shops').insert({owner_id:db.user.id,name:n,category:$('#mc').value,description:$('#md').value.trim()||null,address:ad,locality:lo,price_rs:Math.round(p),original_rs:Math.round(o),stock:Math.round(q),slot_start:mk(h0).toISOString(),slot_end:mk(h1).toISOString(),photos:ph});
-if(error)throw error;mTmp=[];await loadShops();toast('🎉 '+n+' est en ligne !');R();confetti()}catch(e){btn.disabled=false;E('Publication impossible : '+(e.message||e))}}
+const{error}=await sb.from('shops').insert({owner_id:db.user.id,name:n,category:$('#mc').value,description:$('#md').value.trim()||null,address:ad,locality:(adSel&&adSel.loc)||lo,lat:adSel?adSel.lat:null,lng:adSel?adSel.lng:null,price_rs:Math.round(p),original_rs:Math.round(o),stock:Math.round(q),slot_start:mk(h0).toISOString(),slot_end:mk(h1).toISOString(),photos:ph});
+if(error)throw error;mTmp=[];adSel=null;addMode=false;await loadShops();toast('🎉 '+n+' est en ligne !');R();confetti()}catch(e){btn.disabled=false;E('Publication impossible : '+(e.message||e))}}
 async function cpk(){const c=$('#cp').value.trim();if(!c)return;const{error}=await sb.rpc('confirm_pickup',{p_code:c});toast(error?'Code invalide, ou commande non payée':'✅ Retrait confirmé !');if(!error)$('#cp').value=''}
 async function ren(id){const s=byId(id),q=parseInt(prompt('Combien de paniers ?','5'));if(!(q>=1))return;const dt=prompt('Date de retrait (AAAA-MM-JJ)',tdy());if(!/^\d{4}-\d{2}-\d{2}$/.test(dt||''))return toast('Date invalide');
 const f=m=>{const d=new Date(m);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')},a=new Date(dt+'T'+f(s.t0)),b=new Date(dt+'T'+f(s.t1));if(isNaN(a)||isNaN(b)||b<=Date.now())return toast('Choisissez une date à venir');
 const{error}=await sb.from('shops').update({stock:q,slot_start:a.toISOString(),slot_end:b.toISOString()}).eq('id',id);toast(error?'Mise à jour impossible':'🔄 Paniers renouvelés');await loadShops();R()}
+let sgQ=[],adSel=null,pht,addMode=false;
+const ml=s=>'<a href="https://www.google.com/maps/search/?api=1&query='+(s.lat!=null&&s.lng!=null?s.lat+','+s.lng:encodeURIComponent(s.ad))+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">'+esc(s.ad)+'</a>';
+function PH(v){clearTimeout(pht);if(v.trim().length<4)return;pht=setTimeout(async()=>{try{const r=await fetch('https://photon.komoot.io/api/?lang=fr&limit=8&bbox=57.2,-20.6,63.6,-19.6&q='+encodeURIComponent(v.replace(/,?\s*Maurice$/i,'')+' Maurice')),j=await r.json();if($('#ma')?.value!==v)return;const seen=new Set();
+sgQ=(j.features||[]).filter(f=>f.properties.countrycode=='MU').map(f=>{const p=f.properties,area=p.locality||p.district||p.city||p.county||'',st=[p.housenumber,p.street].filter(Boolean).join(' '),nm=p.name&&p.name!==p.street?p.name:'';return{label:[...new Set([nm,st,area].filter(Boolean))].join(', ')+', Maurice',loc:area,lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0]}}).filter(x=>x.label.length>10&&!seen.has(x.label)&&seen.add(x.label)).slice(0,5);
+$('#sg').insertAdjacentHTML('beforeend',sgQ.map((x,i)=>`<button type="button" class="sgi" data-a="sgq" data-i="${i}">🏠 ${esc(x.label)}</button>`).join(''))}catch(e){}},600)}
+async function esv(id){const p=+$('#ep-'+id).value,o=+$('#eo-'+id).value,d=$('#ed-'+id).value.trim();if(!(p>0)||!(o>p))return toast('Le prix du panier doit être inférieur à la valeur.');
+const{error}=await sb.from('shops').update({price_rs:Math.round(p),original_rs:Math.round(o),description:d||null}).eq('id',id);toast(error?'Enregistrement impossible':'✅ Modifications enregistrées');await loadShops();R()}
+async function dph(id,i){const s=byId(id),ph=[...(s.ph||[])],u=ph.splice(i,1)[0];if(!u||!confirm('Supprimer cette photo ?'))return;
+const{error}=await sb.from('shops').update({photos:ph}).eq('id',id);if(error)return toast('Suppression impossible');
+const m=u.split('/shop-photos/')[1];if(m)sb.storage.from('shop-photos').remove([decodeURIComponent(m)]);toast('Photo supprimée');await loadShops();R()}
 const SR=[['Marie','Super panier, très généreux !',5],['Karim','Bon rapport qualité-prix.',4]];
 /* ===== Utilitaires ===== */
 const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -263,7 +273,7 @@ function Oo(){const now=Date.now(),L=db.orders.filter(o=>byId(o.sid)&&(ot=='u'?o
 return`<h1>Commandes</h1><div class="row" style="margin:12px 0"><button class="chip ${ot=='u'?'on':''}" data-a="ot" data-i="u">À venir</button><button class="chip ${ot=='p'?'on':''}" data-a="ot" data-i="p">Passées</button></div>`+
 (L.length?L.map(o=>{const s=byId(o.sid),can=o.st=='u'&&now<o.a;
 return`<div class="card" style="padding:14px;margin-bottom:12px"><div class="row sp"><h3>${s.e} ${esc(s.n)}</h3><b class="new">${eur(o.t)}</b></div>
-<div class="mu">${o.q} panier${o.q>1?'s':''} · 🕒 ${rg(o.a,o.b)}</div>
+<div class="mu">${o.q} panier${o.q>1?'s':''} · 🕒 ${rg(o.a,o.b)}</div><div class="mu">📍 ${ml(s)}</div>
 ${o.st=='u'?`<div class="mu">Fin du créneau : <b data-cd="${o.b}"></b></div><div class="row sp" style="margin-top:8px"><b>Code ${o.code}</b><button class="chip" data-a="qr" data-i="${o.id}">Voir le QR</button></div>
 <div class="row" style="margin-top:8px"><span class="mu">Présentez votre code au commerçant</span>${can?`<button class="btn dng" data-a="can" data-i="${o.id}">Annuler</button>`:''}</div>`
 :o.st=='c'?'<p class="mu">❌ Annulée</p>':`<p class="mu">✅ Récupéré</p>`+(o.rv?`<p>${stars(o.rv)}</p>`:`<div class="row">${[1,2,3,4,5].map(n=>`<button data-a="rate" data-i="${o.id}" data-n="${n}" aria-label="${n} étoiles" style="font-size:26px">☆</button>`).join('')}</div>`)}</div>`}).join(''):empty(ot=='u'?'🛍️':'📜',ot=='u'?'Aucune commande à venir':'Aucune commande passée','Sauvez votre premier panier surprise !'))}
@@ -284,18 +294,25 @@ return`<svg viewBox="-1 -1 23 23" width="190" height="190" style="background:#ff
 let qty=1;
 function Ov(){const o=ov;if(!o)return'';
 if(o.t=='mlog')return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:70px"><h1>Connexion commerçant 🏪</h1><p class="mu">Entrez l’adresse e-mail autorisée pour accéder à votre espace.</p><label class="lbl" for="ml">E-mail</label><input id="ml" type="email" autocomplete="email"><div class="err" id="er" role="alert"></div></div><div class="bar"><button class="btn full" data-a="mlogin">Accéder à mon espace</button></div>`;
-if(o.t=='mdash')return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Espace commerçant 🏪</h1><p class="mu">${esc(db.merch.email)}</p>
-<h2>Confirmer un retrait</h2><div class="row"><input id="cp" placeholder="Code client (ZG-XXXXX)" autocomplete="off" style="flex:1"><button class="btn" data-a="cpk">Valider</button></div><h2>Mes commerces</h2>${MS().length?MS().map(s=>`<div class="card" style="padding:12px;margin-bottom:10px"><div class="row sp"><b>${s.e} ${esc(s.n)}</b><span>${left(s)} dispo</span></div><div class="mu">${eur(s.p)} · ${(s.ph||[]).length} photo(s) · ${rg(s.t0,s.t1)}</div><label class="chip" style="display:inline-flex;align-items:center;margin-top:8px">📷 Ajouter des photos<input type="file" accept="image/*" multiple data-sid="${s.id}" hidden></label> <button class="chip" data-a="ren" data-i="${s.id}">🔄 Renouveler</button></div>`).join(''):'<p class="mu">Aucun commerce pour l’instant.</p>'}
-<h2>Ajouter un commerce</h2><label class="lbl" for="mn">Nom du commerce</label><input id="mn"><label class="lbl" for="mc">Catégorie</label><select id="mc">${CATS.slice(0,5).map(c=>`<option>${c}</option>`).join('')}</select>
+if(o.t=='mdash'){const ms=MS(),form=!ms.length||addMode;return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Espace commerçant 🏪</h1><p class="mu">${esc(db.merch.email)}</p>
+<h2>Confirmer un retrait</h2><div class="row"><input id="cp" placeholder="Code client (ZG-XXXXX)" autocomplete="off" style="flex:1"><button class="btn" data-a="cpk">Valider</button></div>
+${ms.map(s=>`<h2>${s.e} ${esc(s.n)}</h2><div class="card" style="padding:14px"><p>📍 ${ml(s)}</p><p class="mu">🔒 Adresse verrouillée · ${rg(s.t0,s.t1)} · ${left(s)} dispo</p>
+<div class="hs" style="margin:10px 0">${(s.ph||[]).map((x,i)=>`<div style="position:relative;flex:none"><img src="${x}" alt="Photo ${i+1}" style="width:84px;height:84px;object-fit:cover;border-radius:14px"><button data-a="dph" data-i="${s.id}" data-n="${i}" aria-label="Supprimer la photo" style="position:absolute;top:-6px;right:-6px;width:30px;height:30px;min-height:30px;border-radius:50%;background:#fff;color:#1D1D1D">✕</button></div>`).join('')||'<span class="mu">Aucune photo</span>'}</div>
+<label class="chip" style="display:inline-flex;align-items:center">📷 Ajouter des photos<input type="file" accept="image/*" multiple data-sid="${s.id}" hidden></label>
+<div class="row" style="margin-top:10px"><div style="flex:1"><label class="lbl" for="ep-${s.id}">Prix panier (Rs)</label><input id="ep-${s.id}" type="number" step="5" min="10" value="${s.p}"></div><div style="flex:1"><label class="lbl" for="eo-${s.id}">Valeur (Rs)</label><input id="eo-${s.id}" type="number" step="5" min="10" value="${s.o}"></div></div>
+<label class="lbl" for="ed-${s.id}">Description</label><input id="ed-${s.id}" value="${esc(s.ds)}">
+<div class="row" style="margin-top:12px"><button class="btn" data-a="esv" data-i="${s.id}">Enregistrer</button><button class="chip" data-a="ren" data-i="${s.id}">🔄 Renouveler</button></div></div>`).join('')}
+${form?`<h2>Ajouter un commerce</h2><label class="lbl" for="mn">Nom du commerce</label><input id="mn"><label class="lbl" for="mc">Catégorie</label><select id="mc">${CATS.slice(0,5).map(c=>`<option>${c}</option>`).join('')}</select>
 <div class="row"><div style="flex:1"><label class="lbl" for="mp">Prix panier (Rs)</label><input id="mp" type="number" step="5" min="10"></div><div style="flex:1"><label class="lbl" for="mo">Valeur (Rs)</label><input id="mo" type="number" step="5" min="10"></div><div style="flex:1"><label class="lbl" for="mq">Quantité</label><input id="mq" type="number" min="1" value="3"></div></div>
-<label class="lbl" for="mdt">Date de retrait</label><input id="mdt" type="date" value="${tdy()}" min="${tdy()}"><div class="row"><div style="flex:1"><label class="lbl" for="mt0">Retrait dès</label><input id="mt0" type="time" value="16:00"></div><div style="flex:1"><label class="lbl" for="mt1">Jusqu’à</label><input id="mt1" type="time" value="18:00"></div></div><label class="lbl" for="ma">Adresse (Maurice uniquement)</label><div style="position:relative"><input id="ma" autocomplete="off" placeholder="Ex. 12 rue Royale, Curepipe"><div id="sg" class="sg" role="listbox"></div></div><label class="lbl" for="md">Description</label><input id="md">
+<label class="lbl" for="mdt">Date de retrait</label><input id="mdt" type="date" value="${tdy()}" min="${tdy()}"><div class="row"><div style="flex:1"><label class="lbl" for="mt0">Retrait dès</label><input id="mt0" type="time" value="16:00"></div><div style="flex:1"><label class="lbl" for="mt1">Jusqu’à</label><input id="mt1" type="time" value="18:00"></div></div><label class="lbl" for="ma">Adresse (Maurice uniquement)</label><div style="position:relative"><input id="ma" autocomplete="off" placeholder="Ex. 12 rue Royale, Curepipe"><div id="sg" class="sg" role="listbox"></div></div><p class="mu" style="font-size:11px;margin-top:4px">Suggestions d’adresses : © OpenStreetMap (Photon)</p><label class="lbl" for="md">Description</label><input id="md">
 <label class="lbl">Photos (3 max)</label><label class="chip" style="display:inline-flex;align-items:center">📷 Choisir des photos<input id="mph" type="file" accept="image/*" multiple hidden></label><div id="mpv" class="row" style="margin-top:8px"></div>
-<div class="err" id="er" role="alert"></div></div><div class="bar"><button class="btn full" data-a="madd">Publier mon commerce</button></div>`;
+`:`<button class="btn alt full" data-a="addm" style="margin-top:16px">➕ Ajouter un autre commerce</button>`}
+<div class="err" id="er" role="alert"></div></div>${form?'<div class="bar"><button class="btn full" data-a="madd">Publier mon commerce</button></div>':''}`}
 if(o.t=='shop'){const s=byId(o.id),l=left(s),[a,b]=slot(s),f=db.favs.includes(s.id),rv=[...(db.rev[s.id]||[]),...SR];
 return`<button class="back" data-a="close" aria-label="Retour">←</button>${ban(s,'big')}<div class="bd2"><div style="height:26px"></div>
 <div class="row sp"><h1>${esc(s.n)}</h1><button data-a="fav" data-i="${s.id}" aria-label="Favori" style="font-size:26px">${f?'❤️':'🤍'}</button></div>
 <div class="mu"><span style="color:#E0A100">${stars(s.r)}</span> ${s.r} · ${s.c} · ${s.lo}</div><p style="margin:10px 0">${esc(s.ds)}</p>${(s.ph||[]).length>1?`<div class="hs">${s.ph.slice(1).map(x=>`<img src="${x}" alt="Photo de ${esc(s.n)}" style="height:110px;border-radius:16px">`).join('')}</div>`:''}
-<div class="card" style="padding:14px"><p>📍 ${esc(s.ad)}</p><p>🕐 Ouvert 7h–20h</p><p>🕒 Retrait <b>${rg(a,b)}</b> (<span data-cd="${b}"></span>)</p>
+<div class="card" style="padding:14px"><p>📍 ${ml(s)}</p><p>🕐 Ouvert 7h–20h</p><p>🕒 Retrait <b>${rg(a,b)}</b> (<span data-cd="${b}"></span>)</p>
 <p>⚠️ Allergènes : ${esc(s.al).split(', ').map(x=>`<span class="tag">${x}</span>`).join('')}</p></div>
 <h2>Avis</h2>${rv.map(r=>`<div class="card" style="padding:12px;margin-bottom:8px"><b>${esc(r[0])}</b> <span style="color:#E0A100">${stars(r[2])}</span><p class="mu">${esc(r[1])}</p></div>`).join('')}</div>
 <div class="bar row sp"><div><span class="old">${eur(s.o)}</span> <span class="new">${eur(s.p*qty)}</span></div>
@@ -328,6 +345,8 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t
 if(a=='fav'){e.stopPropagation();const id=i,k=db.favs.indexOf(id);k<0?(db.favs.push(id),toast('❤️ Ajouté ! '+(db.prefs.notif?'🔔 Vous serez prévenu des nouveaux paniers.':''))):(db.favs.splice(k,1),toast('Retiré des favoris'));save();favSync(id,k<0);R();t.classList.add('pop');return}
 switch(a){
 case'mreq':mreq();break;
+case'sgq':{const x=sgQ[+i];$('#ma').value=x.label;adSel=x;$('#sg').innerHTML='';break}
+case'sgp':{adSel=null;const x=sgM[+i];$('#ma').value=(sgP?sgP+', ':'')+x+', Maurice';$('#sg').innerHTML='';break}
 case'mopen':ov={t:'mdash'};R();break;
 case'mlogin':{if($('#ml').value.trim().toLowerCase()!=db.merch.email.toLowerCase()){$('#er').textContent='Cette adresse n’est pas autorisée.';return}ov={t:'mdash'};R();break}
 case'madd':madd();break;
@@ -336,7 +355,7 @@ case'reg':auth();break;
 case'am':am=am=='up'?'in':'up';R();break;
 case'tab':tab=i;ov=null;R();break;
 case'shop':qty=1;ov={t:'shop',id:i};R();break;
-case'close':ov=null;R();break;
+case'close':ov=null;addMode=false;R();break;
 case'pin':{const s=byId(i);$('#pc').innerHTML=cardL(s);break}
 case'cat':F.cat=F.cat==i?'':i;R();break;
 case'view':F.view=i;R();break;
@@ -350,6 +369,9 @@ case'goo':ov=null;tab='o';ot='u';R();break;
 case'qr':ov={t:'qr',id:i};R();break;
 case'can':ord('cancel_order',{p_order:i},'Commande annulée');break;
 case'cpk':cpk();break;
+case'esv':esv(i);break;
+case'dph':dph(i,+t.dataset.n);break;
+case'addm':addMode=true;R();break;
 case'ren':ren(i);break;
 case'rate':ord('rate_order',{p_order:i,p_rating:+t.dataset.n},'Merci pour votre avis ⭐');break;
 case'diet':{const d=db.prefs.diets,k=d.indexOf(i);k<0?d.push(i):d.splice(k,1);save();R();break}
@@ -357,7 +379,7 @@ case'th':db.theme=i;save();theme();R();break;
 case'out':sb&&sb.auth.signOut();db.user=null;db.orders=[];db.favs=[];db.merch={email:'',st:'none'};ob=3;tab='d';save();R();break}});
 document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.matches('[role=button]'))e.target.click()});
 document.addEventListener('input',e=>{const t=e.target;
-if(t.id=='ma'){SG(t.value)}else if(t.id=='q'){F.q=t.value;BL()}else if(t.id=='mx'){F.max=+t.value;$('#mv').textContent='Rs '+F.max;BL()}
+if(t.id=='ma'){adSel=null;SG(t.value);PH(t.value)}else if(t.id=='q'){F.q=t.value;BL()}else if(t.id=='mx'){F.max=+t.value;$('#mv').textContent='Rs '+F.max;BL()}
 else if(t.id=='rg'){db.prefs.radius=+t.value;$('#rv').textContent=t.value+' km';save()}});
 document.addEventListener('change',e=>{const t=e.target;
 if(t.id=='mph'){[...t.files].slice(0,3-mTmp.length).forEach(f=>rz(f,d=>{mTmp.push(d);$('#mpv').innerHTML=mTmp.map(x=>`<img src="${x}" alt="Aperçu" style="width:64px;height:64px;object-fit:cover;border-radius:12px">`).join('')}))}
