@@ -133,18 +133,18 @@ db=db||{ob:0,user:null,favs:[3],orders:[],stock:{},slots:{},rev:{},prefs:{radius
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){}};
 // id,nom,emoji,cat,prix,prixInitial,stock,dist(km),note,début(min),durée(min),description,adresse,allergènes,teinte,nouveau,végé
 const S=[
-[1,'Boulangerie Mie de Pain','🥖','boulangerie',3.99,12,4,.4,4.7,20,90,'Pain, viennoiseries et sandwichs du jour invendus.','12 rue des Lilas','Gluten, lait, œuf',30,0,0],
-[2,'Le Bistrot Marguerite','🍽️','restaurant',4.99,15,3,.9,4.5,60,120,'Plats du jour cuisinés maison, portions généreuses.','5 place du Marché','Gluten, lait, céleri',10,0,0],
-[3,'Biocoop Les Champs','🛒','supermarché',5.50,16,6,1.2,4.3,30,150,'Fruits, légumes et produits frais proches de la date.','28 av. de la Gare','Variable',140,1,1],
-[4,'Pâtisserie Sucre d’Orge','🧁','pâtisserie',4.50,14,2,1.5,4.9,45,60,'Éclairs, tartelettes et entremets de la vitrine.','3 rue Gambetta','Gluten, lait, œuf, fruits à coque',330,0,0],
-[5,'Chez Nonna Pia','🍕','restaurant',5.99,17,5,2.1,4.6,90,120,'Pizzas et pâtes fraîches à l’italienne.','14 quai des Arts','Gluten, lait',5,1,0],
-[6,'Épicerie Grain de Sel','🥫','épicerie',3.50,11,8,2.4,4.2,15,200,'Conserves, vrac et produits de dépannage.','9 rue du Moulin','Variable',45,0,1],
-[7,'Au Fournil Doré','🥐','boulangerie',3.49,10,2,2.8,4.4,10,50,'Croissants, pains au chocolat et baguettes.','31 bd Voltaire','Gluten, lait, œuf',38,0,0],
-[8,'Green Bowl','🥗','restaurant',5.20,14,4,3.2,4.8,120,90,'Bowls végétariens, salades et soupes.','7 rue Verte','Sésame, soja',150,1,1],
-[9,'Marché U Express','🧺','supermarché',4.90,15,7,3.6,4.0,40,160,'Panier mixte : frais, épicerie, boissons.','60 route de Lyon','Variable',200,0,0],
-[10,'Délices de Léa','🍰','pâtisserie',4.20,13,3,4.1,4.6,75,70,'Gâteaux maison et cookies de la veille.','2 impasse des Roses','Gluten, lait, œuf, noisette',320,1,0],
-[11,'Wok & Roll','🍜','restaurant',5.60,16,2,4.5,4.3,150,60,'Nouilles sautées et petits plats asiatiques.','18 rue Neuve','Gluten, soja, arachide',20,0,0],
-[12,'Le Panier Vert','🥕','épicerie',4.00,12,5,4.9,4.5,25,180,'Légumes de saison un peu moches mais délicieux.','Ferme des Prés','Aucun',120,0,1]
+[1,'Boulangerie Mie de Pain','🥖','boulangerie',150,450,4,.4,4.7,20,90,'Pain, viennoiseries et sandwichs du jour invendus.','12 rue des Lilas','Gluten, lait, œuf',30,0,0],
+[2,'Le Bistrot Marguerite','🍽️','restaurant',200,600,3,.9,4.5,60,120,'Plats du jour cuisinés maison, portions généreuses.','5 place du Marché','Gluten, lait, céleri',10,0,0],
+[3,'Biocoop Les Champs','🛒','supermarché',220,650,6,1.2,4.3,30,150,'Fruits, légumes et produits frais proches de la date.','28 av. de la Gare','Variable',140,1,1],
+[4,'Pâtisserie Sucre d’Orge','🧁','pâtisserie',180,550,2,1.5,4.9,45,60,'Éclairs, tartelettes et entremets de la vitrine.','3 rue Gambetta','Gluten, lait, œuf, fruits à coque',330,0,0],
+[5,'Chez Nonna Pia','🍕','restaurant',240,700,5,2.1,4.6,90,120,'Pizzas et pâtes fraîches à l’italienne.','14 quai des Arts','Gluten, lait',5,1,0],
+[6,'Épicerie Grain de Sel','🥫','épicerie',140,420,8,2.4,4.2,15,200,'Conserves, vrac et produits de dépannage.','9 rue du Moulin','Variable',45,0,1],
+[7,'Au Fournil Doré','🥐','boulangerie',130,400,2,2.8,4.4,10,50,'Croissants, pains au chocolat et baguettes.','31 bd Voltaire','Gluten, lait, œuf',38,0,0],
+[8,'Green Bowl','🥗','restaurant',210,560,4,3.2,4.8,120,90,'Bowls végétariens, salades et soupes.','7 rue Verte','Sésame, soja',150,1,1],
+[9,'Marché U Express','🧺','supermarché',195,600,7,3.6,4.0,40,160,'Panier mixte : frais, épicerie, boissons.','60 route de Lyon','Variable',200,0,0],
+[10,'Délices de Léa','🍰','pâtisserie',170,520,3,4.1,4.6,75,70,'Gâteaux maison et cookies de la veille.','2 impasse des Roses','Gluten, lait, œuf, noisette',320,1,0],
+[11,'Wok & Roll','🍜','restaurant',225,650,2,4.5,4.3,150,60,'Nouilles sautées et petits plats asiatiques.','18 rue Neuve','Gluten, soja, arachide',20,0,0],
+[12,'Le Panier Vert','🥕','épicerie',160,480,5,4.9,4.5,25,180,'Légumes de saison un peu moches mais délicieux.','Ferme des Prés','Aucun',120,0,1]
 ].map(a=>({id:a[0],n:a[1],e:a[2],c:a[3],p:a[4],o:a[5],st:a[6],d:a[7],r:a[8],s0:a[9],du:a[10],ds:a[11],ad:a[12],al:a[13],h:a[14],nw:a[15],v:a[16]}));
 const CATS=['boulangerie','restaurant','supermarché','pâtisserie','épicerie','végétarien'];
 S.push(...db.ms);
@@ -159,12 +159,12 @@ return`<p>Vous êtes restaurateur ou commerçant ? Proposez vos invendus en pani
 const SR=[['Marie','Super panier, très généreux !',5],['Karim','Bon rapport qualité-prix.',4]];
 /* ===== Utilitaires ===== */
 const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const eur=n=>n.toFixed(2).replace('.',',')+' €',hm=t=>new Date(t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+const eur=n=>'Rs '+Math.round(n),hm=t=>new Date(t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
 const slot=s=>{let x=db.slots[s.id];if(!x||x[1]<Date.now()){const n=Date.now();x=db.slots[s.id]=[n+s.s0*6e4,n+(s.s0+s.du)*6e4];db.stock[s.id]=s.st;save()}return x};
 const left=s=>(slot(s),db.stock[s.id]??s.st);
 const byId=i=>S.find(s=>s.id==i);
 const stars=r=>'★'.repeat(Math.round(r))+'☆'.repeat(5-Math.round(r));
-let tab='d',ov=null,F={q:'',cat:'',max:10,slot:'',av:false,sort:'d',view:'l'},ob=0,tmo;
+let tab='d',ov=null,F={q:'',cat:'',max:500,slot:'',av:false,sort:'d',view:'l'},ob=0,tmo;
 function toast(m){clearTimeout(tmo);document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;$('#app').append(t);tmo=setTimeout(()=>t.remove(),2800)}
 function confetti(){for(let i=0;i<60;i++){const c=document.createElement('i');c.className='cf';c.style.left=Math.random()*100+'%';c.style.background=['#F2683C','#0E6B5C','#F5C84B','#7BD3B5'][i%4];c.style.animationDelay=Math.random()*.5+'s';$('#app').append(c);setTimeout(()=>c.remove(),3000)}}
 function theme(){document.documentElement.dataset.theme='light'}
@@ -202,7 +202,7 @@ function Bb(){return`<h1>Parcourir</h1><input id="q" type="search" placeholder="
 <div class="hs" style="gap:8px">${CATS.map(c=>`<button class="chip ${F.cat==c?'on':''}" data-a="cat" data-i="${c}">${c}</button>`).join('')}</div>
 <div class="row" style="margin:8px 0;flex-wrap:wrap"><select id="sl" style="flex:1" aria-label="Créneau"><option value="">Tout créneau</option><option value="m">Matin</option><option value="a">Après-midi</option><option value="s">Soir</option></select>
 <select id="so" style="flex:1" aria-label="Tri"><option value="d">Distance</option><option value="p">Prix</option><option value="r">Note</option></select></div>
-<label class="row sp mu" for="mx">Prix max <b id="mv">${F.max} €</b></label><input id="mx" type="range" min="3" max="10" step=".5" value="${F.max}" style="padding:0;border:0">
+<label class="row sp mu" for="mx">Prix max <b id="mv">Rs ${F.max}</b></label><input id="mx" type="range" min="100" max="500" step="10" value="${F.max}" style="padding:0;border:0">
 <div class="row sp" style="margin:6px 0"><label class="row mu"><input type="checkbox" id="av" ${F.av?'checked':''} style="width:22px;min-height:22px"> Disponible aujourd’hui</label>
 <span><button class="chip ${F.view=='l'?'on':''}" data-a="view" data-i="l">☰ Liste</button> <button class="chip ${F.view=='m'?'on':''}" data-a="view" data-i="m">🗺️ Carte</button></span></div><div id="bl"></div>`}
 function BL(){const L=filt(),b=$('#bl');if(!b)return;
@@ -223,7 +223,7 @@ return`<div class="card" style="padding:14px;margin-bottom:12px"><div class="row
 ${o.st=='u'?`<div class="mu">Fin du créneau : <b data-cd="${o.b}"></b></div><div class="row sp" style="margin-top:8px"><b>Code ${o.code}</b><button class="chip" data-a="qr" data-i="${o.id}">Voir le QR</button></div>
 <div class="row" style="margin-top:8px"><button class="btn" data-a="got" data-i="${o.id}">✅ Récupéré</button>${can?`<button class="btn dng" data-a="can" data-i="${o.id}">Annuler</button>`:''}</div>`
 :o.st=='c'?'<p class="mu">❌ Annulée</p>':`<p class="mu">✅ Récupéré</p>`+(o.rv?`<p>${stars(o.rv)}</p>`:`<div class="row">${[1,2,3,4,5].map(n=>`<button data-a="rate" data-i="${o.id}" data-n="${n}" aria-label="${n} étoiles" style="font-size:26px">☆</button>`).join('')}</div>`)}</div>`}).join(''):empty(ot=='u'?'🛍️':'📜',ot=='u'?'Aucune commande à venir':'Aucune commande passée','Sauvez votre premier panier surprise !'))}
-const BADGES=[['🌱','Première bouchée',m=>m>=1],['🥈','5 repas sauvés',m=>m>=5],['🏆','10 repas sauvés',m=>m>=10],['💰','20 € économisés',(m,e)=>e>=20],['💚','Fan de quartier',(m,e,f)=>f>=3],['🌍','25 kg CO₂ évités',(m,e,f,c)=>c>=25]];
+const BADGES=[['🌱','Première bouchée',m=>m>=1],['🥈','5 repas sauvés',m=>m>=5],['🏆','10 repas sauvés',m=>m>=10],['💰','Rs 1000 économisés',(m,e)=>e>=1000],['💚','Fan de quartier',(m,e,f)=>f>=3],['🌍','25 kg CO₂ évités',(m,e,f,c)=>c>=25]];
 function Pp(){const d=db.orders.filter(o=>o.st=='d'),m=d.reduce((a,o)=>a+o.q,0),e=d.reduce((a,o)=>a+(byId(o.sid).o-byId(o.sid).p)*o.q,0),c=m*2.5,P=db.prefs;
 return`<h1>Profil</h1><p class="mu">${esc(db.user.name)} · ${esc(db.user.email)}</p>
 <h2>🌍 Mon impact</h2><div class="row"><div class="stat"><b>${m}</b><span class="mu">repas sauvés</span></div><div class="stat"><b>${c.toFixed(1)}</b><span class="mu">kg CO₂</span></div><div class="stat"><b>${eur(e)}</b><span class="mu">économisés</span></div></div>
@@ -243,7 +243,7 @@ if(o.t=='mlog')return`<button class="back" data-a="close" aria-label="Retour">�
 if(o.t=='mdash')return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Espace commerçant 🏪</h1><p class="mu">${esc(db.merch.email)}</p>
 <h2>Mes commerces</h2>${db.ms.length?db.ms.map(s=>`<div class="card" style="padding:12px;margin-bottom:10px"><div class="row sp"><b>${s.e} ${esc(s.n)}</b><span>${left(s)} dispo</span></div><div class="mu">${eur(s.p)} · ${(s.ph||[]).length} photo(s)</div><label class="chip" style="display:inline-flex;align-items:center;margin-top:8px">📷 Ajouter des photos<input type="file" accept="image/*" multiple data-sid="${s.id}" hidden></label></div>`).join(''):'<p class="mu">Aucun commerce pour l’instant.</p>'}
 <h2>Ajouter un commerce</h2><label class="lbl" for="mn">Nom du commerce</label><input id="mn"><label class="lbl" for="mc">Catégorie</label><select id="mc">${CATS.slice(0,5).map(c=>`<option>${c}</option>`).join('')}</select>
-<div class="row"><div style="flex:1"><label class="lbl" for="mp">Prix panier €</label><input id="mp" type="number" step=".1" min="1"></div><div style="flex:1"><label class="lbl" for="mo">Valeur €</label><input id="mo" type="number" step=".1" min="1"></div><div style="flex:1"><label class="lbl" for="mq">Quantité</label><input id="mq" type="number" min="1" value="3"></div></div>
+<div class="row"><div style="flex:1"><label class="lbl" for="mp">Prix panier (Rs)</label><input id="mp" type="number" step="5" min="10"></div><div style="flex:1"><label class="lbl" for="mo">Valeur (Rs)</label><input id="mo" type="number" step="5" min="10"></div><div style="flex:1"><label class="lbl" for="mq">Quantité</label><input id="mq" type="number" min="1" value="3"></div></div>
 <label class="lbl" for="ma">Adresse</label><input id="ma"><label class="lbl" for="md">Description</label><input id="md">
 <label class="lbl">Photos (3 max)</label><label class="chip" style="display:inline-flex;align-items:center">📷 Choisir des photos<input id="mph" type="file" accept="image/*" multiple hidden></label><div id="mpv" class="row" style="margin-top:8px"></div>
 <div class="err" id="er" role="alert"></div></div><div class="bar"><button class="btn full" data-a="madd">Publier mon commerce</button></div>`;
@@ -316,7 +316,7 @@ case'th':db.theme=i;save();theme();R();break;
 case'out':db.user=null;ob=0;tab='d';save();R();break}});
 document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.matches('[role=button]'))e.target.click()});
 document.addEventListener('input',e=>{const t=e.target;
-if(t.id=='q'){F.q=t.value;BL()}else if(t.id=='mx'){F.max=+t.value;$('#mv').textContent=F.max+' €';BL()}
+if(t.id=='q'){F.q=t.value;BL()}else if(t.id=='mx'){F.max=+t.value;$('#mv').textContent='Rs '+F.max;BL()}
 else if(t.id=='rg'){db.prefs.radius=+t.value;$('#rv').textContent=t.value+' km';save()}});
 document.addEventListener('change',e=>{const t=e.target;
 if(t.id=='mph'){[...t.files].slice(0,3-mTmp.length).forEach(f=>rz(f,d=>{mTmp.push(d);$('#mpv').innerHTML=mTmp.map(x=>`<img src="${x}" alt="Aperçu" style="width:64px;height:64px;object-fit:cover;border-radius:12px">`).join('')}))}
