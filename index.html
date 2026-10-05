@@ -130,6 +130,7 @@ input,select{background:#F8F8F8;color:#1D1D1D;border-color:#E4E4E4}input:focus,s
 .mrow{display:flex;align-items:center;gap:16px;width:100%;background:#fff;border:1px solid #ECECEC;border-radius:22px;padding:0 18px;min-height:60px;margin-bottom:10px;font-weight:700;color:#1D1D1D;text-align:left;box-shadow:0 2px 10px rgba(29,29,29,.05);text-decoration:none}
 .mrow span{flex:1}.mrow:active{transform:scale(.99)}
 .sw{display:block;flex:none;width:52px;height:30px;border-radius:99px;background:#CFD6D5;position:relative;transition:background .2s}.sw:after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s}.sw.on{background:#389C9A}.sw.on:after{left:25px}
+.step{display:flex;gap:14px;align-items:flex-start;margin:16px 0}.step i{flex:none;width:44px;height:44px;border-radius:50%;background:#E3F3F2;display:flex;align-items:center;justify-content:center;font-size:21px;font-style:normal}.step p{margin-top:2px;line-height:1.45}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body>
 <div id="app"><div id="main"></div><nav id="nav" aria-label="Navigation principale"></nav></div>
@@ -173,7 +174,7 @@ async function loadShops(){if(!sb)return;const{data,error}=await sb.from('shops'
 async function loadMine(){const u=db.user.id,[o,f,m]=await Promise.all([sb.from('orders').select('*').eq('customer_id',u).order('created_at',{ascending:false}),sb.from('favorites').select('shop_id').eq('user_id',u),sb.from('merchants').select('*').eq('id',u).maybeSingle()]);
 db.orders=(o.data||[]).map(r=>({id:r.id,sid:r.shop_id,q:r.qty,t:r.total_rs,code:r.code,a:Date.parse(r.slot_start),b:Date.parse(r.slot_end),st:r.status=='upcoming'?'u':r.status=='done'?'d':'c',rv:r.rating}));
 db.favs=(f.data||[]).map(x=>x.shop_id);const g=m.data;db.merch=g?{email:g.contact_email,st:g.status=='approved'?'ok':g.status=='pending'?'p':'none'}:{email:'',st:'none'};save()}
-async function start(u){db.user={id:u.id,name:u.user_metadata?.name||'Ami(e)',email:u.email};db.seen=true;save();await Promise.all([loadShops(),loadMine()]);tab='d';R();toast('Bienvenue '+db.user.name+' 🌿')}
+async function start(u,isNew){db.user={id:u.id,name:u.user_metadata?.name||'Ami(e)',email:u.email};db.seen=true;save();await Promise.all([loadShops(),loadMine()]);tab='d';ov=(isNew||Date.now()-Date.parse(u.created_at)<36e5)&&!(db.howSeen||{})[u.id]?{t:'how'}:null;R();toast('Bienvenue '+db.user.name+' 🌿')}
 async function boot(){if(!sb){toast('Connexion au serveur impossible');return}const{data}=await sb.auth.getSession(),u=data.session?.user;
 if(!u){if(db.user){db.user=null;save()}await loadShops();R();return}
 db.user={id:u.id,name:u.user_metadata?.name||'Ami(e)',email:u.email};save();await Promise.all([loadShops(),loadMine()]);R()}
@@ -181,7 +182,7 @@ async function auth(){if(!sb)return toast('Connexion au serveur impossible');con
 if(!/^\S+@\S+\.\S+$/.test(m)||p.length<6||(am=='up'&&!n)){$('#er').textContent='Renseignez'+(am=='up'?' un prénom,':'')+' un e-mail valide et un mot de passe (6 caractères min.).';return}
 const r=am=='up'?await sb.auth.signUp({email:m,password:p,options:{data:{name:n}}}):await sb.auth.signInWithPassword({email:m,password:p});
 if(r.error){$('#er').textContent=trErr(r.error.message);return}
-if(!r.data.session){toast('📧 Confirmez votre e-mail, puis connectez-vous.');am='in';R();return}await start(r.data.session.user)}
+if(!r.data.session){toast('📧 Confirmez votre e-mail, puis connectez-vous.');am='in';R();return}await start(r.data.session.user,am=='up')}
 async function favSync(id,add){if(!sb||!db.user)return;const r=add?await sb.from('favorites').insert({user_id:db.user.id,shop_id:id}):await sb.from('favorites').delete().eq('user_id',db.user.id).eq('shop_id',id);if(r.error)toast('Favori non synchronisé')}
 async function conf(){const s=byId(ov.id),c=$('#cn').value.replace(/\s/g,'');
 if(!/^\d{16}$/.test(c)){$('#er').textContent='Numéro de carte invalide (16 chiffres).';return}
@@ -321,6 +322,14 @@ for(let y=0;y<n;y++)for(let x=0;x<n;x++){let on;if(f(x,y)){const a=x%14%7,b=y%14
 return`<svg viewBox="-1 -1 23 23" width="190" height="190" style="background:#fff;padding:6px;border-radius:14px" role="img" aria-label="QR code ${code}"><g fill="#0F3D33">${r}</g></svg>`}
 let qty=1;
 function Ov(){const o=ov;if(!o)return'';
+if(o.t=='how')return`<button class="back" data-a="howok" aria-label="Fermer">✕</button><div class="bd2" style="padding-top:64px"><h1>Bienvenue ${esc(db.user.name)} 👋</h1><p class="mu" style="margin-top:4px">Voici comment sauver des repas avec Zero Gaspi, en 5 étapes.</p>
+<div class="step"><i>🔍</i><div><b>1. Trouvez un panier</b><p class="mu">Parcourez les paniers surprise près de chez vous. Utilisez la recherche et les filtres, et touchez le cœur pour garder vos commerces favoris.</p></div></div>
+<div class="step"><i>🛍️</i><div><b>2. Réservez</b><p class="mu">Choisissez la quantité et réservez. Vous recevez un code de retrait et un QR, à retrouver dans « Commandes ».</p></div></div>
+<div class="step"><i>🕒</i><div><b>3. Récupérez-le à l’heure</b><p class="mu">Présentez votre code au commerçant pendant le créneau indiqué. Hors créneau, le panier n’est pas remboursé. Vous pouvez annuler avant le début du créneau.</p></div></div>
+<div class="step"><i>🌍</i><div><b>4. Suivez votre impact</b><p class="mu">Dans votre Profil, voyez les repas et les kilos sauvés, vos économies et vos trophées.</p></div></div>
+<div class="step"><i>🛡️</i><div><b>Une allergie ou un régime ?</b><p class="mu">Profil → Régimes &amp; allergènes : les paniers qui ne vous conviennent pas sont masqués.</p></div></div>
+<div class="step"><i>🏪</i><div><b>Vous êtes commerçant ?</b><p class="mu">Profil → Espace commerçant : faites une demande d’autorisation, puis publiez vos paniers, vos photos et vos horaires de retrait.</p></div></div>
+<p class="mu" style="margin-top:14px">Vous pourrez relire ce guide dans Profil → Aide &amp; contact.</p></div><div class="bar"><button class="btn full" data-a="howok">J’ai compris, c’est parti !</button></div>`;
 if(o.t=='pinfo')return PO('Mes informations',`<label class="lbl" for="pn">Prénom</label><input id="pn" value="${esc(db.user.name)}" autocomplete="given-name"><button class="btn full" data-a="pname" style="margin-top:12px">Enregistrer</button>
 <label class="lbl">Adresse e-mail</label><p>${esc(db.user.email)}</p><button class="btn alt full" data-a="del" style="margin-top:28px;color:#C0392B;border-color:#C0392B">Supprimer mon compte</button>`);
 if(o.t=='pdiet')return PO('Régimes &amp; allergènes',`<p class="mu">Les paniers qui ne correspondent pas à vos choix sont masqués dans Découvrir et Parcourir.</p><h2>Régimes</h2><div style="display:flex;flex-wrap:wrap;gap:8px">${['Végétarien','Sans gluten'].map(x=>`<button class="chip ${db.prefs.diets.includes(x)?'on':''}" data-a="diet" data-i="${x}">${x}</button>`).join('')}</div>
@@ -328,6 +337,7 @@ if(o.t=='pdiet')return PO('Régimes &amp; allergènes',`<p class="mu">Les panier
 <p class="mu" style="margin-top:10px">Les paniers dont les allergènes ne sont pas précisés sont aussi masqués. Informations fournies par les commerçants : en cas d’allergie grave, vérifiez auprès du commerce.</p>`);
 if(o.t=='ptro'){const{m,e,c}=imp();return PO('Mes trophées',`<div class="card" style="padding:14px;display:flex;flex-wrap:wrap;gap:14px 3%">${BADGES.map(b=>`<div class="bg ${b[2](m,e,db.favs.length,c)?'':'lock'}"><i>${b[0]}</i>${b[1]}</div>`).join('')}</div>`)}
 if(o.t=='phelp')return PO('Aide &amp; contact',`<div class="card" style="padding:16px;margin:14px 0"><b>Comment ça marche</b><ul style="margin:6px 0 0 18px;padding:0"><li>Choisissez un panier surprise et réservez-le.</li><li>Présentez votre code au commerçant pendant le créneau de retrait.</li><li>Vous pouvez annuler avant le début du créneau.</li></ul></div>
+<button class="btn alt full" data-a="how" style="margin-bottom:12px">Revoir le guide de bienvenue</button>
 <a class="mrow" href="conditions.html" target="_blank" rel="noopener"><span>Conditions d’utilisation</span>${ic(IC.chev,'#8A9794')}</a><a class="mrow" href="confidentialite.html" target="_blank" rel="noopener"><span>Politique de confidentialité</span>${ic(IC.chev,'#8A9794')}</a><a class="mrow" href="supprimer-mon-compte.html" target="_blank" rel="noopener"><span>Supprimer mon compte (page web)</span>${ic(IC.chev,'#8A9794')}</a>`);
 if(o.t=='pmerch')return PO('Espace commerçant',`<div class="card" style="padding:14px;margin-top:14px">${Mc()}</div>`);
 if(o.t=='delshop'){const s=byId(o.id);return`<button class="back" data-a="mback" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Supprimer l’annonce</h1><p class="mu">${s?s.e+' '+esc(s.n):''}</p>
@@ -421,6 +431,8 @@ case'can':ord('cancel_order',{p_order:i},'Commande annulée');break;
 case'altog':t.classList.toggle('on');break;
 case'alf':{const A=db.prefs.al=db.prefs.al||[],k=A.indexOf(i);k<0?A.push(i):A.splice(k,1);save();R();break}
 case'cpk':cpk();break;
+case'how':ov={t:'how'};R();break;
+case'howok':{db.howSeen=db.howSeen||{};db.howSeen[db.user.id]=1;save();ov=null;R();break}
 case'pov':ov={t:i};R();break;
 case'notif':{db.prefs.notif=!db.prefs.notif;save();t.querySelector('.sw').classList.toggle('on');toast(db.prefs.notif?'🔔 Notifications activées':'🔕 Notifications désactivées');break}
 case'pname':pname();break;
