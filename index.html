@@ -175,6 +175,11 @@ input,select{background:#F8F8F8;color:#1D1D1D;border-color:#E4E4E4}input:focus,s
 .mc{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #E8E8E8;border-radius:26px;padding:12px 14px;margin-bottom:10px;cursor:pointer}.mc.sel{background:#FFF1CF;border:2px solid #FEDB71}
 .mc .tile{width:64px;height:64px;font-size:30px}.mc.sel .tile{background:#fff!important}
 .pp{display:inline-block;background:#FEDB71;color:#1D1D1D;font-weight:800;border-radius:99px;padding:8px 14px;font-size:17px;margin-top:4px}.mc.sel .pp{background:#2B807E;color:#fff}
+/* Prix lisibles sur une ligne, même pour Rs 5000 ou Rs 10000 */
+.new,.old,.pr,.pp,.cpp,.mpin b,.stat b,.cdp,.bdg{white-space:nowrap}
+.sc .row.sp{flex-wrap:wrap;row-gap:4px}
+.bar.row{flex-wrap:wrap;row-gap:10px}
+.cpp{min-width:max-content}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body>
 <div id="app"><div id="main"></div><nav id="nav" aria-label="Navigation principale"></nav></div>
@@ -289,12 +294,12 @@ await sb.from('profiles').update({name:n}).eq('id',db.user.id);db.user.name=n;sa
 const SR=[['Marie','Super panier, très généreux !',5],['Karim','Bon rapport qualité-prix.',4]];
 /* ===== Utilitaires ===== */
 const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const eur=n=>'Rs '+Math.round(n),hm=t=>new Date(t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+const eur=n=>'Rs\u00A0'+Math.round(n),hm=t=>new Date(t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
 const slot=s=>[s.t0,s.t1];
 const left=s=>s.t1>Date.now()?s.st:0;
 const byId=i=>S.find(s=>s.id==i);
 const stars=r=>'★'.repeat(Math.round(r))+'☆'.repeat(5-Math.round(r));
-let tab='d',ov=null,F={q:'',cat:'',max:1000,slot:'',av:false,sort:'d',view:'l',last:false,fo:false},ob=db.seen?3:0,tmo;
+let tab='d',ov=null,F={q:'',cat:'',max:10000,slot:'',av:false,sort:'d',view:'l',last:false,fo:false},ob=db.seen?3:0,tmo;
 function toast(m){clearTimeout(tmo);document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;$('#app').append(t);tmo=setTimeout(()=>t.remove(),2800)}
 function confetti(){for(let i=0;i<60;i++){const c=document.createElement('i');c.className='cf';c.style.left=Math.random()*100+'%';c.style.background=['#F2683C','#0E6B5C','#F5C84B','#7BD3B5'][i%4];c.style.animationDelay=Math.random()*.5+'s';$('#app').append(c);setTimeout(()=>c.remove(),3000)}}
 function theme(){document.documentElement.dataset.theme='light'}
@@ -325,7 +330,7 @@ const dk=s=>me&&s.lat!=null&&s.lng!=null?6371*2*Math.asin(Math.sqrt(Math.sin(rad
 const dist=s=>{const k=dk(s);return k==null?s.lo:k<1?Math.max(50,Math.round(k*20)*50)+' m':k.toFixed(1).replace('.',',')+' km'};
 const TINT=c=>CATS.indexOf(c)%2?'#FFF4CF':'#E3F3F2',cap=x=>x[0].toUpperCase()+x.slice(1),phBg=s=>s.ph&&s.ph[0]?`url('${s.ph[0]}') center/cover`:'';
 const PI={pin:'<path d="M12 21s-7-6.2-7-11.2A7 7 0 0 1 19 9.8C19 14.8 12 21 12 21z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>',filt:'<path d="M4 7h16M7 12h10M10 17h4"/>',timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9.5 2.5h5"/>'};
-function filt(nl){let L=S.filter(s=>(!F.q||(s.n+s.c+s.ds).toLowerCase().includes(F.q.toLowerCase()))&&(!F.cat||(F.cat=='végétarien'?s.v:s.c==F.cat))&&s.p<=F.max&&(!F.av||(left(s)>0&&new Date(s.t0).toDateString()==new Date().toDateString()))&&alOk(s)&&(nl||!F.last||(left(s)>0&&left(s)<=2)));
+function filt(nl){let L=S.filter(s=>(!F.q||(s.n+s.c+s.ds).toLowerCase().includes(F.q.toLowerCase()))&&(!F.cat||(F.cat=='végétarien'?s.v:s.c==F.cat))&&(!F.av||(left(s)>0&&new Date(s.t0).toDateString()==new Date().toDateString()))&&alOk(s)&&(nl||!F.last||(left(s)>0&&left(s)<=2)));
 if(F.slot)L=L.filter(s=>{const h=new Date(slot(s)[0]).getHours();return F.slot=='m'?h<12:F.slot=='a'?h>=12&&h<17:h>=17});
 return L.sort((a,b)=>F.sort=='d'?b.cr-a.cr:F.sort=='p'?a.p-b.p:F.sort=='n'?(dk(a)??1e9)-(dk(b)??1e9):b.r-a.r)}
 const hh=t=>{const d=new Date(t);return d.getHours()+'h'+(d.getMinutes()?String(d.getMinutes()).padStart(2,'0'):'')};
@@ -348,12 +353,11 @@ function lcard(s){const l=left(s),[a,b]=slot(s),p=phBg(s);
 return`<div class="lc" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="lct" style="${p?'background:'+p:''}"><span class="bdg">Plus que ${l}</span><span class="cdp" data-cd="${b}"></span>${p?'':`<span class="lci">${s.e}</span>`}</div><div class="lcb"><div><b>${esc(s.n)}</b><div class="sm">${esc(dist(s))} · ★ ${s.r} · ${hh(a)}–${hh(b)}</div></div><span class="pr">${eur(s.p)}</span></div></div>`}
 function cardP(s){const l=left(s),[a,b]=slot(s),p=phBg(s);
 return`<div class="cp2" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ★ ${s.r}</div><div class="sm2">${l?rg(a,b):'Épuisé'}</div></div><div class="cpp"><span class="old">${eur(s.o)}</span><b>${eur(s.p)}</b></div></div>`}
-function Bb(){const act=(db.prefs.al.length||F.slot||F.av||F.max<1000||F.view=='m')?'<i class="dot"></i>':'',sel=(v,x)=>v==x?'selected':'';
+function Bb(){const act=(db.prefs.al.length||F.slot||F.av||F.view=='m')?'<i class="dot"></i>':'',sel=(v,x)=>v==x?'selected':'';
 return`<div class="phd"><div class="row sp"><div><div class="hl">${me?'Autour de vous':'Maurice'}</div><h1>Parcourir</h1></div><button class="locb" data-a="map" aria-label="Voir la carte">${ic(PI.pin,'#fff')}</button></div>
 <div class="sbar">${ic(PI.search,'#6B6B6B')}<input id="q" type="search" placeholder="Boulangerie, pizza, légumes…" value="${esc(F.q)}" aria-label="Rechercher"><button class="fbtn" data-a="ftog" aria-label="Filtres">${ic(PI.filt)}${act}</button></div></div>
 <div class="hs" style="gap:10px;margin-top:18px">${['',...CATS].map(c=>`<button class="chip cp ${F.cat==c?'on':''}" data-a="cat" data-i="${c}">${c?cap(c):'Tout'}</button>`).join('')}</div>
 <div id="fp" class="fpanel ${F.fo?'':'hide'}"><b>Créneau de retrait</b><select id="sl" aria-label="Créneau" style="margin:6px 0 12px"><option value="" ${sel(F.slot,'')}>Tout créneau</option><option value="m" ${sel(F.slot,'m')}>Matin</option><option value="a" ${sel(F.slot,'a')}>Après-midi</option><option value="s" ${sel(F.slot,'s')}>Soir</option></select>
-<label class="row sp" for="mx"><b>Prix max</b><b id="mv">Rs ${F.max}</b></label><input id="mx" type="range" min="100" max="1000" step="10" value="${F.max}" style="padding:0;border:0;background:none;box-shadow:none">
 <label class="row" style="margin:10px 0"><input type="checkbox" id="av" ${F.av?'checked':''} style="width:22px;min-height:22px"> Disponible aujourd’hui</label>
 <b>Affichage</b><div class="row" style="margin:6px 0 12px"><button class="chip cp ${F.view=='l'?'on':''}" data-a="view" data-i="l">☰ Liste</button><button class="chip cp ${F.view=='m'?'on':''}" data-a="view" data-i="m">🗺️ Carte</button></div>
 <b>🛡️ Allergènes à éviter</b><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">${ALG.map(x=>`<button class="chip cp ${db.prefs.al.includes(x[0])?'on':''}" data-a="alf" data-i="${x[0]}">${x[0]}</button>`).join('')}</div>${db.prefs.al.length?'<p class="mu" style="margin:6px 0 0">Les paniers contenant ces allergènes, ou dont les allergènes ne sont pas précisés, sont masqués. Informations fournies par les commerçants : en cas d’allergie grave, vérifiez auprès du commerce.</p>':''}</div>
@@ -544,7 +548,7 @@ case'th':db.theme=i;save();theme();R();break;
 case'out':sb&&sb.auth.signOut();db.user=null;db.orders=[];db.favs=[];db.merch={email:'',st:'none'};ob=3;tab='d';save();R();break}});
 document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.matches('[role=button]'))e.target.click()});
 document.addEventListener('input',e=>{const t=e.target;
-if(t.id=='ma'){adSel=null;SG(t.value);PH(t.value)}else if(t.id=='q'){F.q=t.value;BL()}else if(t.id=='mq'){MF.q=t.value;MP()}else if(t.id=='mx'){F.max=+t.value;$('#mv').textContent='Rs '+F.max;BL()}
+if(t.id=='ma'){adSel=null;SG(t.value);PH(t.value)}else if(t.id=='q'){F.q=t.value;BL()}else if(t.id=='mq'){MF.q=t.value;MP()}
 else if(t.id=='rg'){db.prefs.radius=+t.value;$('#rv').textContent=t.value+' km';save()}});
 document.addEventListener('change',e=>{const t=e.target;
 if(t.id=='mph'){[...t.files].slice(0,3-mTmp.length).forEach(f=>rz(f,d=>{mTmp.push(d);$('#mpv').innerHTML=mTmp.map(x=>`<img src="${x}" alt="Aperçu" style="width:64px;height:64px;object-fit:cover;border-radius:12px">`).join('')}))}
