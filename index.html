@@ -216,10 +216,10 @@ const{error}=await sb.from('shops').update({price_rs:Math.round(p),original_rs:M
 async function dph(id,i){const s=byId(id),ph=[...(s.ph||[])],u=ph.splice(i,1)[0];if(!u||!confirm('Supprimer cette photo ?'))return;
 const{error}=await sb.from('shops').update({photos:ph}).eq('id',id);if(error)return toast('Suppression impossible');
 const m=u.split('/shop-photos/')[1];if(m)sb.storage.from('shop-photos').remove([decodeURIComponent(m)]);toast('Photo supprimée');await loadShops();R()}
-async function del(){if(!sb)return;const w=prompt('Suppression DÉFINITIVE de votre compte et de vos données.\n\nTapez SUPPRIMER pour confirmer :');if((w||'').trim().toUpperCase()!=='SUPPRIMER')return;
-const ok=await sb.rpc('can_delete_account');if(ok.error||!ok.data)return toast('Suppression impossible : une commande payée attend encore son retrait.');
+async function del(){if(!sb)return;const w=$('#dc')?$('#dc').value:'';if(w.trim().toUpperCase()!=='SUPPRIMER'){$('#er').textContent='Tapez le mot SUPPRIMER pour confirmer.';return}
+const ok=await sb.rpc('can_delete_account');if(ok.error||!ok.data){$('#er').textContent='Suppression impossible : une commande payée attend encore son retrait. Faites-la confirmer ou annulez-la d’abord.';return}
 const paths=MS().flatMap(s=>(s.ph||[]).map(u=>decodeURIComponent(u.split('/shop-photos/')[1]||''))).filter(Boolean);if(paths.length)await sb.storage.from('shop-photos').remove(paths);
-const{error}=await sb.rpc('delete_my_account');if(error)return toast('Suppression impossible : '+error.message);
+const{error}=await sb.rpc('delete_my_account');if(error){$('#er').textContent='Suppression impossible : '+error.message;return}
 try{await sb.auth.signOut({scope:'local'})}catch(e){}db.user=null;db.orders=[];db.favs=[];db.merch={email:'',st:'none'};db.seen=true;save();ob=3;tab='d';ov=null;R();toast('Votre compte a été supprimé.')}
 const SR=[['Marie','Super panier, très généreux !',5],['Karim','Bon rapport qualité-prix.',4]];
 /* ===== Utilitaires ===== */
@@ -299,6 +299,11 @@ for(let y=0;y<n;y++)for(let x=0;x<n;x++){let on;if(f(x,y)){const a=x%14%7,b=y%14
 return`<svg viewBox="-1 -1 23 23" width="190" height="190" style="background:#fff;padding:6px;border-radius:14px" role="img" aria-label="QR code ${code}"><g fill="#0F3D33">${r}</g></svg>`}
 let qty=1;
 function Ov(){const o=ov;if(!o)return'';
+if(o.t=='del')return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Supprimer mon compte</h1><p class="mu">Connecté en tant que <b>${esc(db.user.email)}</b></p>
+<div class="card" style="padding:16px;margin:14px 0"><b>Ce qui est supprimé</b><ul style="margin:6px 0 12px 18px;padding:0"><li>Votre compte, votre prénom et votre adresse e-mail</li><li>Vos favoris</li><li>Si vous êtes commerçant : votre demande, vos commerces et leurs photos</li></ul><b>Ce qui est conservé</b><ul style="margin:6px 0 0 18px;padding:0"><li>Les commandes déjà passées, sans lien avec vous (montant, date, code), pour les besoins comptables.</li></ul></div>
+<p class="mu">Une suppression est définitive. Elle est impossible tant qu’une commande payée attend son retrait.</p>
+<label class="lbl" for="dc">Tapez SUPPRIMER pour confirmer</label><input id="dc" autocomplete="off" autocapitalize="characters">
+<div class="err" id="er" role="alert"></div></div><div class="bar"><button class="btn full" data-a="delok" style="background:#C0392B;color:#fff">Supprimer définitivement</button></div>`;
 if(o.t=='mlog')return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:70px"><h1>Connexion commerçant 🏪</h1><p class="mu">Entrez l’adresse e-mail autorisée pour accéder à votre espace.</p><label class="lbl" for="ml">E-mail</label><input id="ml" type="email" autocomplete="email"><div class="err" id="er" role="alert"></div></div><div class="bar"><button class="btn full" data-a="mlogin">Accéder à mon espace</button></div>`;
 if(o.t=='mdash'){const ms=MS(),form=!ms.length||addMode;return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Espace commerçant 🏪</h1><p class="mu">${esc(db.merch.email)}</p>
 <h2>Confirmer un retrait</h2><div class="row"><input id="cp" placeholder="Code client (ZG-XXXXX)" autocomplete="off" style="flex:1"><button class="btn" data-a="cpk">Valider</button></div>
@@ -375,7 +380,8 @@ case'goo':ov=null;tab='o';ot='u';R();break;
 case'qr':ov={t:'qr',id:i};R();break;
 case'can':ord('cancel_order',{p_order:i},'Commande annulée');break;
 case'cpk':cpk();break;
-case'del':del();break;
+case'del':ov={t:'del'};R();break;
+case'delok':del();break;
 case'esv':esv(i);break;
 case'dph':dph(i,+t.dataset.n);break;
 case'addm':addMode=true;R();break;
