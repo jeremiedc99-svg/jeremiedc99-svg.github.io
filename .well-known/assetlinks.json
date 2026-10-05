@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "mu.zerogaspi.app",
+        "sha256_cert_fingerprints": ["F9:C8:83:EF:D1:AF:21:19:ED:F2:A0:50:AC:85:62:F8:FD:76:53:02:CF:06:8D:DD:09:6B:7B:DB:C3:FC:71:D3"]
+      }
+    }]
