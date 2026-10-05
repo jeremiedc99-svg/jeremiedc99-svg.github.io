@@ -133,7 +133,7 @@ input,select{background:#F8F8F8;color:#1D1D1D;border-color:#E4E4E4}input:focus,s
 /* === Notification e-mail au commerçant (via EmailJS) : renseignez les 4 valeurs ci-dessous === */
 const MAIL={service:'',template:'',key:'',demoTo:''}; // demoTo = adresse qui reçoit les commandes des commerces de démonstration
 const K='zg_v1';let db;try{db=JSON.parse(localStorage.getItem(K))}catch(e){}
-db=db||{ob:0,user:null,favs:[3],orders:[],stock:{},slots:{},rev:{},prefs:{radius:5,diets:[],notif:true},theme:'auto',merch:{email:'',st:'none'},ms:[]};db.merch=db.merch||{email:'',st:'none'};db.ms=db.ms||[];
+db=db||{ob:0,user:null,favs:[3],orders:[],stock:{},slots:{},rev:{},prefs:{radius:5,diets:[],notif:true},theme:'auto',merch:{email:'',st:'none'},ms:[]};db.merch=db.merch||{email:'',st:'none'};db.ms=db.ms||[];db.prefs.al=db.prefs.al||[];
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){}};
 // id,nom,emoji,cat,prix,prixInitial,stock,dist(km),note,début(min),durée(min),description,adresse,allergènes,teinte,nouveau,végé
 let S=[];
@@ -198,9 +198,10 @@ if(!n||!(p>0)||!(o>p)||!(q>=1)||!(kg>0))return E('Indiquez un nom, un prix de pa
 if(!okAd(ad)&&!(adSel&&adSel.label===ad))return E('Indiquez une adresse à Maurice : choisissez une ville ou un village dans la liste.');
 const mk=h=>new Date($('#mdt').value+'T'+h);
 if(!$('#mdt').value||!h0||!h1||mk(h1)<=mk(h0)||mk(h1)<=new Date())return E('Indiquez une date et un créneau de retrait valides (dans le futur).');
+const alS=alVal('mal');if(alS==null)return E('Indiquez les allergènes du panier (ou « Aucun allergène », sans mélanger les deux).');
 const lo=MU.filter(x=>nz(ad).includes(nz(x))).sort((a,b)=>b.length-a.length)[0],btn=$('[data-a=madd]');btn.disabled=true;E('');
 try{const ph=[];for(const x of mTmp)ph.push(await upl(x,'new'));
-const{error}=await sb.from('shops').insert({owner_id:db.user.id,name:n,category:$('#mc').value,description:$('#md').value.trim()||null,address:ad,locality:(adSel&&adSel.loc)||lo,lat:adSel?adSel.lat:null,lng:adSel?adSel.lng:null,price_rs:Math.round(p),original_rs:Math.round(o),stock:Math.round(q),weight_kg:kg,slot_start:mk(h0).toISOString(),slot_end:mk(h1).toISOString(),photos:ph});
+const{error}=await sb.from('shops').insert({owner_id:db.user.id,name:n,category:$('#mc').value,description:$('#md').value.trim()||null,address:ad,locality:(adSel&&adSel.loc)||lo,lat:adSel?adSel.lat:null,lng:adSel?adSel.lng:null,price_rs:Math.round(p),original_rs:Math.round(o),stock:Math.round(q),weight_kg:kg,allergens:alS,slot_start:mk(h0).toISOString(),slot_end:mk(h1).toISOString(),photos:ph});
 if(error)throw error;mTmp=[];adSel=null;addMode=false;await loadShops();toast('🎉 '+n+' est en ligne !');R();confetti()}catch(e){btn.disabled=false;E('Publication impossible : '+(e.message||e))}}
 async function cpk(){const c=$('#cp').value.trim();if(!c)return;const{error}=await sb.rpc('confirm_pickup',{p_code:c});toast(error?'Code invalide, ou commande non payée':'✅ Retrait confirmé !');if(!error)$('#cp').value=''}
 async function ren(id){const s=byId(id),q=parseInt(prompt('Combien de paniers ?','5'));if(!(q>=1))return;const dt=prompt('Date de retrait (AAAA-MM-JJ)',tdy());if(!/^\d{4}-\d{2}-\d{2}$/.test(dt||''))return toast('Date invalide');
@@ -211,8 +212,8 @@ const ml=s=>'<a href="https://www.google.com/maps/search/?api=1&query='+(s.lat!=
 function PH(v){clearTimeout(pht);if(v.trim().length<4)return;pht=setTimeout(async()=>{try{const r=await fetch('https://photon.komoot.io/api/?lang=fr&limit=8&bbox=57.2,-20.6,63.6,-19.6&q='+encodeURIComponent(v.replace(/,?\s*Maurice$/i,'')+' Maurice')),j=await r.json();if($('#ma')?.value!==v)return;const seen=new Set();
 sgQ=(j.features||[]).filter(f=>f.properties.countrycode=='MU').map(f=>{const p=f.properties,area=p.locality||p.district||p.city||p.county||'',st=[p.housenumber,p.street].filter(Boolean).join(' '),nm=p.name&&p.name!==p.street?p.name:'';return{label:[...new Set([nm,st,area].filter(Boolean))].join(', ')+', Maurice',loc:area,lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0]}}).filter(x=>x.label.length>10&&!seen.has(x.label)&&seen.add(x.label)).slice(0,5);
 $('#sg').insertAdjacentHTML('beforeend',sgQ.map((x,i)=>`<button type="button" class="sgi" data-a="sgq" data-i="${i}">🏠 ${esc(x.label)}</button>`).join(''))}catch(e){}},600)}
-async function esv(id){const p=+$('#ep-'+id).value,o=+$('#eo-'+id).value,d=$('#ed-'+id).value.trim(),k=+$('#ek-'+id).value;if(!(p>0)||!(o>p))return toast('Le prix du panier doit être inférieur à la valeur.');if(!(k>0))return toast('Indiquez le poids du panier en kg.');
-const{error}=await sb.from('shops').update({price_rs:Math.round(p),original_rs:Math.round(o),weight_kg:k,description:d||null}).eq('id',id);toast(error?'Enregistrement impossible':'✅ Modifications enregistrées');await loadShops();R()}
+async function esv(id){const p=+$('#ep-'+id).value,o=+$('#eo-'+id).value,d=$('#ed-'+id).value.trim(),k=+$('#ek-'+id).value;if(!(p>0)||!(o>p))return toast('Le prix du panier doit être inférieur à la valeur.');if(!(k>0))return toast('Indiquez le poids du panier en kg.');const al=alVal('eal-'+id);if(al==null)return toast('Indiquez les allergènes (ou « Aucun allergène », sans mélanger les deux).');
+const{error}=await sb.from('shops').update({price_rs:Math.round(p),original_rs:Math.round(o),weight_kg:k,allergens:al,description:d||null}).eq('id',id);toast(error?'Enregistrement impossible':'✅ Modifications enregistrées');await loadShops();R()}
 async function dph(id,i){const s=byId(id),ph=[...(s.ph||[])],u=ph.splice(i,1)[0];if(!u||!confirm('Supprimer cette photo ?'))return;
 const{error}=await sb.from('shops').update({photos:ph}).eq('id',id);if(error)return toast('Suppression impossible');
 const m=u.split('/shop-photos/')[1];if(m)sb.storage.from('shop-photos').remove([decodeURIComponent(m)]);toast('Photo supprimée');await loadShops();R()}
@@ -221,6 +222,13 @@ const ok=await sb.rpc('can_delete_account');if(ok.error||!ok.data){$('#er').text
 const paths=MS().flatMap(s=>(s.ph||[]).map(u=>decodeURIComponent(u.split('/shop-photos/')[1]||''))).filter(Boolean);if(paths.length)await sb.storage.from('shop-photos').remove(paths);
 const{error}=await sb.rpc('delete_my_account');if(error){$('#er').textContent='Suppression impossible : '+error.message;return}
 try{await sb.auth.signOut({scope:'local'})}catch(e){}db.user=null;db.orders=[];db.favs=[];db.merch={email:'',st:'none'};db.seen=true;save();ob=3;tab='d';ov=null;R();toast('Votre compte a été supprimé.')}
+const ALG=[['Gluten',['gluten']],['Lait',['lait']],['Œufs',['œuf','oeuf']],['Arachides',['arachide']],['Fruits à coque',['coque','noisette','amande','noix','pistache']],['Soja',['soja']],['Poisson',['poisson']],['Crustacés',['crustac']],['Mollusques',['mollusque']],['Céleri',['céleri','celeri']],['Sésame',['sésame','sesame']],['Moutarde',['moutarde']],['Sulfites',['sulfite']],['Lupin',['lupin']]];
+const hasAl=(s,n)=>{const x=String(s.al).toLowerCase();return ALG.find(a=>a[0]==n)[1].some(k=>x.includes(k))};
+const alKnown=s=>!/variable|préciser/i.test(s.al);
+const alOk=s=>{const A=db.prefs.al||[];return !A.length||(alKnown(s)&&!A.some(a=>hasAl(s,a)))};
+const alChips=(id,s)=>`<div id="${id}" style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0">${[...ALG.map(a=>a[0]),'Aucun allergène'].map(n=>`<button type="button" class="chip ${s&&(n=='Aucun allergène'?/aucun/i.test(s.al):hasAl(s,n))?'on':''}" data-a="altog" data-v="${n}">${n}</button>`).join('')}</div>`;
+function alVal(id){const v=[...document.querySelectorAll('#'+id+' .chip.on')].map(x=>x.dataset.v),none=v.includes('Aucun allergène'),l=v.filter(x=>x!='Aucun allergène');
+if(none&&l.length||!none&&!l.length)return null;return none?'Aucun':l.join(', ')}
 const SR=[['Marie','Super panier, très généreux !',5],['Karim','Bon rapport qualité-prix.',4]];
 /* ===== Utilitaires ===== */
 const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -251,14 +259,15 @@ return`<div class="card" data-a="shop" data-i="${s.id}" role="button" tabindex="
 const sec=(t,l)=>`<h2>${t}</h2>`+(l.length?`<div class="hs">${l.map(cardH).join('')}</div>`:'<p class="mu">Rien pour l’instant 🌱</p>');
 const empty=(e,t,s)=>`<div class="empty"><b>${e}</b><h3>${t}</h3><p>${s}</p></div>`;
 /* ===== Écrans ===== */
-function Dd(){const vg=db.prefs.diets.includes('Végétarien'),L=S.filter(s=>!vg||s.v),av=L.filter(s=>left(s)>0);
+function Dd(){const vg=db.prefs.diets.includes('Végétarien'),L=S.filter(s=>(!vg||s.v)&&alOk(s)),av=L.filter(s=>left(s)>0);
 return`<div class="hero"><div class="mu">📍 Maurice</div><h1>Bonjour ${esc(db.user.name)} 👋</h1><p style="opacity:.9">Sauvez un panier surprise, régalez-vous 🌿</p></div>`+(L.length?
 sec('⏳ Sauvés bientôt',[...av].sort((a,b)=>a.t1-b.t1).slice(0,6))+sec('✨ Nouveautés',[...L].sort((a,b)=>b.cr-a.cr).slice(0,6))+sec('🔥 Dernière chance',av.filter(s=>left(s)<=2))+sec('💸 Petits prix',[...av].sort((a,b)=>a.p-b.p).slice(0,6)):empty('🌱','Pas encore de paniers','Les commerçants publient leurs paniers chaque jour. Revenez bientôt !'))}
-function filt(){let L=S.filter(s=>(!F.q||(s.n+s.c+s.ds).toLowerCase().includes(F.q.toLowerCase()))&&(!F.cat||(F.cat=='végétarien'?s.v:s.c==F.cat))&&s.p<=F.max&&(!F.av||(left(s)>0&&new Date(s.t0).toDateString()==new Date().toDateString())));
+function filt(){let L=S.filter(s=>(!F.q||(s.n+s.c+s.ds).toLowerCase().includes(F.q.toLowerCase()))&&(!F.cat||(F.cat=='végétarien'?s.v:s.c==F.cat))&&s.p<=F.max&&(!F.av||(left(s)>0&&new Date(s.t0).toDateString()==new Date().toDateString()))&&alOk(s));
 if(F.slot)L=L.filter(s=>{const h=new Date(slot(s)[0]).getHours();return F.slot=='m'?h<12:F.slot=='a'?h>=12&&h<17:h>=17});
 return L.sort((a,b)=>F.sort=='d'?b.cr-a.cr:F.sort=='p'?a.p-b.p:b.r-a.r)}
 function Bb(){return`<h1>Parcourir</h1><input id="q" type="search" placeholder="🔍 Boulangerie, pizza, légumes…" value="${esc(F.q)}" aria-label="Rechercher" style="margin:12px 0">
 <div class="hs" style="gap:8px">${CATS.map(c=>`<button class="chip ${F.cat==c?'on':''}" data-a="cat" data-i="${c}">${c}</button>`).join('')}</div>
+<b style="font-size:14px">🛡️ Allergènes à éviter</b><div class="hs" style="gap:8px;margin-top:6px">${ALG.map(a=>`<button class="chip ${db.prefs.al.includes(a[0])?'on':''}" data-a="alf" data-i="${a[0]}">${a[0]}</button>`).join('')}</div>${db.prefs.al.length?'<p class="mu" style="margin:4px 0">Les paniers contenant ces allergènes, ou dont les allergènes ne sont pas précisés, sont masqués. Informations fournies par les commerçants : en cas d’allergie grave, vérifiez auprès du commerce.</p>':''}
 <div class="row" style="margin:8px 0;flex-wrap:wrap"><select id="sl" style="flex:1" aria-label="Créneau"><option value="">Tout créneau</option><option value="m">Matin</option><option value="a">Après-midi</option><option value="s">Soir</option></select>
 <select id="so" style="flex:1" aria-label="Tri"><option value="d">Plus récent</option><option value="p">Prix</option><option value="r">Note</option></select></div>
 <label class="row sp mu" for="mx">Prix max <b id="mv">Rs ${F.max}</b></label><input id="mx" type="range" min="100" max="1000" step="10" value="${F.max}" style="padding:0;border:0">
@@ -312,12 +321,14 @@ ${ms.map(s=>`<h2>${s.e} ${esc(s.n)}</h2><div class="card" style="padding:14px"><
 <div class="hs" style="margin:10px 0">${(s.ph||[]).map((x,i)=>`<div style="position:relative;flex:none"><img src="${x}" alt="Photo ${i+1}" style="width:84px;height:84px;object-fit:cover;border-radius:14px"><button data-a="dph" data-i="${s.id}" data-n="${i}" aria-label="Supprimer la photo" style="position:absolute;top:-6px;right:-6px;width:30px;height:30px;min-height:30px;border-radius:50%;background:#fff;color:#1D1D1D">✕</button></div>`).join('')||'<span class="mu">Aucune photo</span>'}</div>
 <label class="chip" style="display:inline-flex;align-items:center">📷 Ajouter des photos<input type="file" accept="image/*" multiple data-sid="${s.id}" hidden></label>
 <div class="row" style="margin-top:10px"><div style="flex:1"><label class="lbl" for="ep-${s.id}">Prix panier (Rs)</label><input id="ep-${s.id}" type="number" step="5" min="10" value="${s.p}"></div><div style="flex:1"><label class="lbl" for="eo-${s.id}">Valeur (Rs)</label><input id="eo-${s.id}" type="number" step="5" min="10" value="${s.o}"></div></div>
+<label class="lbl">Allergènes du panier</label>${alChips('eal-'+s.id,s)}
 <label class="lbl" for="ek-${s.id}">Poids du panier (kg)</label><input id="ek-${s.id}" type="number" step="0.1" min="0.1" value="${s.kg}">
 <label class="lbl" for="ed-${s.id}">Description</label><input id="ed-${s.id}" value="${esc(s.ds)}">
 <div class="row" style="margin-top:12px"><button class="btn" data-a="esv" data-i="${s.id}">Enregistrer</button><button class="chip" data-a="ren" data-i="${s.id}">🔄 Renouveler</button></div></div>`).join('')}
 ${form?`<h2>Ajouter un commerce</h2><label class="lbl" for="mn">Nom du commerce</label><input id="mn"><label class="lbl" for="mc">Catégorie</label><select id="mc">${CATS.slice(0,5).map(c=>`<option>${c}</option>`).join('')}</select>
 <div class="row"><div style="flex:1"><label class="lbl" for="mp">Prix panier (Rs)</label><input id="mp" type="number" step="5" min="10"></div><div style="flex:1"><label class="lbl" for="mo">Valeur (Rs)</label><input id="mo" type="number" step="5" min="10"></div><div style="flex:1"><label class="lbl" for="mq">Quantité</label><input id="mq" type="number" min="1" value="3"></div></div>
 <label class="lbl" for="mk">Poids du panier (kg)</label><input id="mk" type="number" step="0.1" min="0.1" value="1">
+<label class="lbl">Allergènes du panier</label>${alChips('mal',null)}
 <label class="lbl" for="mdt">Date de retrait</label><input id="mdt" type="date" value="${tdy()}" min="${tdy()}"><div class="row"><div style="flex:1"><label class="lbl" for="mt0">Retrait dès</label><input id="mt0" type="time" value="16:00"></div><div style="flex:1"><label class="lbl" for="mt1">Jusqu’à</label><input id="mt1" type="time" value="18:00"></div></div><label class="lbl" for="ma">Adresse (Maurice uniquement)</label><div style="position:relative"><input id="ma" autocomplete="off" placeholder="Ex. 12 rue Royale, Curepipe"><div id="sg" class="sg" role="listbox"></div></div><p class="mu" style="font-size:11px;margin-top:4px">Suggestions d’adresses : © OpenStreetMap (Photon)</p><label class="lbl" for="md">Description</label><input id="md">
 <label class="lbl">Photos (3 max)</label><label class="chip" style="display:inline-flex;align-items:center">📷 Choisir des photos<input id="mph" type="file" accept="image/*" multiple hidden></label><div id="mpv" class="row" style="margin-top:8px"></div>
 `:`<button class="btn alt full" data-a="addm" style="margin-top:16px">➕ Ajouter un autre commerce</button>`}
@@ -382,6 +393,8 @@ case'conf':conf();break;
 case'goo':ov=null;tab='o';ot='u';R();break;
 case'qr':ov={t:'qr',id:i};R();break;
 case'can':ord('cancel_order',{p_order:i},'Commande annulée');break;
+case'altog':t.classList.toggle('on');break;
+case'alf':{const A=db.prefs.al=db.prefs.al||[],k=A.indexOf(i);k<0?A.push(i):A.splice(k,1);save();R();break}
 case'cpk':cpk();break;
 case'del':ov={t:'del'};R();break;
 case'delok':del();break;
