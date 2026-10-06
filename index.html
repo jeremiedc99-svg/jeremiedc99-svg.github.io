@@ -180,6 +180,8 @@ input,select{background:#F8F8F8;color:#1D1D1D;border-color:#E4E4E4}input:focus,s
 .sc .row.sp{flex-wrap:wrap;row-gap:4px}
 .bar.row{flex-wrap:wrap;row-gap:10px}
 .cpp{min-width:max-content}
+.pl{display:flex;align-items:center;gap:10px;margin-top:6px;white-space:nowrap}
+.pl .old{font-size:14px}.pl b{font-size:20px;color:#2B807E}.pl .pp{margin-top:0;padding:6px 14px}.pl .new{font-size:18px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body>
 <div id="app"><div id="main"></div><nav id="nav" aria-label="Navigation principale"></nav></div>
@@ -310,8 +312,8 @@ return`<div class="card sc" data-a="shop" data-i="${s.id}" role="button" tabinde
 <span class="badge ${l?'':'out'}">${l?l+' restant'+(l>1?'s':''):'Épuisé'}</span>
 <button class="heart" data-a="fav" data-i="${s.id}" aria-label="${f?'Retirer des':'Ajouter aux'} favoris">${f?'❤️':'🤍'}</button>
 <div class="bd"><h3>${esc(s.n)}</h3><div class="mu">${s.c} · ${s.lo} · <span style="color:#E0A100">★</span> ${s.r}</div>
-<div class="mu">🕒 ${rg(a,b)}</div>
-<div class="row sp" style="margin-top:6px"><span><span class="old">${eur(s.o)}</span> <span class="new">${eur(s.p)}</span></span><span class="mu" data-cd="${b}"></span></div></div></div>`}
+<div class="mu">🕒 ${rg(a,b)} · <span data-cd="${b}"></span></div>
+<div class="pl" style="margin-top:6px"><span class="old">${eur(s.o)}</span><span class="new">${eur(s.p)}</span></div></div></div>`}
 function cardL(s){const l=left(s),f=db.favs.includes(s.id),[a,b]=slot(s);
 return`<div class="card" data-a="shop" data-i="${s.id}" role="button" tabindex="0" style="margin-bottom:12px;display:flex;align-items:center;gap:12px;padding:12px">
 <div style="width:64px;height:64px;border-radius:18px;background:${bg(s)};display:flex;align-items:center;justify-content:center;font-size:32px">${s.ph&&s.ph[0]?'':s.e}</div>
@@ -343,7 +345,7 @@ function mapList(){const n=Date.now();return S.filter(s=>(!MF.q||(s.n+s.c+s.ds).
 .sort((a,b)=>F.sort=='n'&&me?(dk(a)??1e9)-(dk(b)??1e9):F.sort=='p'?a.p-b.p:b.cr-a.cr)}
 function mpin(s){const[x,y]=mpos(s),se=mapSel==s.id;return`<button class="mpin ${se?'sel':''} ${left(s)?'':'out'}" style="left:${x}%;top:${y}%" data-a="mpin" data-i="${s.id}" aria-label="${esc(s.n)}"><span>${s.e}</span>${se?`<b>${eur(s.p)}</b>`:''}</button>`}
 function mcard(s){const l=left(s),[a,b]=slot(s),p=phBg(s),se=mapSel==s.id;
-return`<div class="mc ${se?'sel':''}" data-a="mcard" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ★ ${s.r}</div><div class="sm2">${l?'Retrait '+dl(a)+hh(a)+'–'+hh(b)+' · '+l+' restant'+(l>1?'s':''):'Épuisé'}</div></div><div class="cpp"><span class="old">${eur(s.o)}</span><br><span class="pp">${eur(s.p)}</span></div></div>`}
+return`<div class="mc ${se?'sel':''}" data-a="mcard" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ★ ${s.r}</div><div class="sm2">${l?'Retrait '+dl(a)+hh(a)+'–'+hh(b)+' · '+l+' restant'+(l>1?'s':''):'Épuisé'}</div><div class="pl"><span class="old">${eur(s.o)}</span><span class="pp">${eur(s.p)}</span></div></div></div>`}
 function MP(){const pe=$('#mpins');if(!pe)return;const L=mapList();if(!L.find(s=>s.id==mapSel))mapSel=L[0]?L[0].id:null;
 const u=me?mxy(me.lat,me.lng):null;
 pe.innerHTML=(u?`<i class="udot" style="left:${u[0]}%;top:${u[1]}%"></i>`:'')+L.filter(s=>s.id!=mapSel).map(mpin).join('')+L.filter(s=>s.id==mapSel).map(mpin).join('');
@@ -352,7 +354,7 @@ $('#mlist').innerHTML=L.length?L.map(mcard).join(''):empty('📍','Aucun panier'
 function lcard(s){const l=left(s),[a,b]=slot(s),p=phBg(s);
 return`<div class="lc" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="lct" style="${p?'background:'+p:''}"><span class="bdg">Plus que ${l}</span><span class="cdp" data-cd="${b}"></span>${p?'':`<span class="lci">${s.e}</span>`}</div><div class="lcb"><div><b>${esc(s.n)}</b><div class="sm">${esc(dist(s))} · ★ ${s.r} · ${hh(a)}–${hh(b)}</div></div><span class="pr">${eur(s.p)}</span></div></div>`}
 function cardP(s){const l=left(s),[a,b]=slot(s),p=phBg(s);
-return`<div class="cp2" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ★ ${s.r}</div><div class="sm2">${l?rg(a,b):'Épuisé'}</div></div><div class="cpp"><span class="old">${eur(s.o)}</span><b>${eur(s.p)}</b></div></div>`}
+return`<div class="cp2" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ★ ${s.r}</div><div class="sm2">${l?rg(a,b):'Épuisé'}</div><div class="pl"><span class="old">${eur(s.o)}</span><b>${eur(s.p)}</b></div></div></div>`}
 function Bb(){const act=(db.prefs.al.length||F.slot||F.av||F.view=='m')?'<i class="dot"></i>':'',sel=(v,x)=>v==x?'selected':'';
 return`<div class="phd"><div class="row sp"><div><div class="hl">${me?'Autour de vous':'Maurice'}</div><h1>Parcourir</h1></div><button class="locb" data-a="map" aria-label="Voir la carte">${ic(PI.pin,'#fff')}</button></div>
 <div class="sbar">${ic(PI.search,'#6B6B6B')}<input id="q" type="search" placeholder="Boulangerie, pizza, légumes…" value="${esc(F.q)}" aria-label="Rechercher"><button class="fbtn" data-a="ftog" aria-label="Filtres">${ic(PI.filt)}${act}</button></div></div>
