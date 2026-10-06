@@ -407,7 +407,7 @@ return`<div class="phd"><div class="row sp"><div><div class="hl">${me?'Autour de
 <div class="row sp" style="margin:22px 0 10px"><h2 style="margin:0">Tous les paniers <span class="mu" id="cnt"></span></h2><select id="so" class="sortsel" aria-label="Tri"><option value="d" ${sel(F.sort,'d')}>Plus récent</option><option value="p" ${sel(F.sort,'p')}>Prix</option><option value="r" ${sel(F.sort,'r')}>Note</option>${me?`<option value="n" ${sel(F.sort,'n')}>Plus proche</option>`:''}</select></div><div id="bl"></div>`}
 function BL(){const nl=filt(true),L=filt(),bx=$('#bl'),lcs=$('#lcs'),cn=$('#cnt');if(!bx)return;
 const lc=nl.filter(s=>left(s)>0&&left(s)<=2).sort((a,b)=>a.t1-b.t1);
-if(lcs)lcs.innerHTML=F.view=='l'&&lc.length?`<div class="row sp" style="margin:22px 0 10px"><h2 style="margin:0;display:flex;align-items:center;gap:8px">${ic(PI.timer,'#2B807E')} Dernière chance</h2><button class="tl" data-a="lastall">${F.last?'Tout':'Tout voir'}</button></div><div class="hs">${lc.map(lcard).join('')}</div>`:'';
+if(lcs)lcs.innerHTML=F.view=='l'&&lc.length?`<div class="row sp" style="margin:22px 0 10px"><h2 style="margin:0;display:flex;align-items:center;gap:8px">${ic(PI.timer,'#2B807E')} Dernière chance</h2><button class="tl" data-a="lastall">${F.last?'Tout':'Tout voir'}</button></div><div class="hs">${lc.map(cardH).join('')}</div>`:'';
 if(cn)cn.textContent='· '+L.length;
 if(!L.length){bx.innerHTML=empty('🔎','Aucun résultat','Essayez d’élargir vos filtres.');return}
 if(F.view=='l'){bx.innerHTML=L.map(cardP).join('');tick();return}
