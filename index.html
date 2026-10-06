@@ -182,6 +182,11 @@ input,select{background:#F8F8F8;color:#1D1D1D;border-color:#E4E4E4}input:focus,s
 .cpp{min-width:max-content}
 .pl{display:flex;align-items:center;gap:10px;margin-top:6px;white-space:nowrap}
 .pl .old{font-size:14px}.pl b{font-size:20px;color:#2B807E}.pl .pp{margin-top:0;padding:6px 14px}.pl .new{font-size:18px}
+/* Cartes de paniers : chaque information reste sur sa ligne, au même endroit */
+.card h3,.cpi b,.lcb b,.bd h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card[data-a=shop] .mu,.sm2,.sm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcb>div:first-child{min-width:0}.row>h3{min-width:0}
+.cdp2{position:absolute;top:72px;right:12px;z-index:2;background:rgba(29,29,29,.68);color:#fff;font-weight:800;font-size:12px;padding:4px 10px;border-radius:99px;white-space:nowrap}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body>
 <div id="app"><div id="main"></div><nav id="nav" aria-label="Navigation principale"></nav></div>
@@ -309,16 +314,16 @@ function theme(){document.documentElement.dataset.theme='light'}
 const ban=(s,c='')=>`<div class="ban ${c}" style="background:${bg(s)}"><span aria-hidden="true">${s.ph&&s.ph[0]?'':s.e}</span><i class="logo">${s.e}</i></div>`;
 function cardH(s){const l=left(s),f=db.favs.includes(s.id),[a,b]=slot(s);
 return`<div class="card sc" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}">${ban(s)}
-<span class="badge ${l?'':'out'}">${l?l+' restant'+(l>1?'s':''):'Épuisé'}</span>
+<span class="badge ${l?'':'out'}">${l?l+' restant'+(l>1?'s':''):'Épuisé'}</span><span class="cdp2" data-cd="${b}"></span>
 <button class="heart" data-a="fav" data-i="${s.id}" aria-label="${f?'Retirer des':'Ajouter aux'} favoris">${f?'❤️':'🤍'}</button>
 <div class="bd"><h3>${esc(s.n)}</h3><div class="mu">${s.c} · ${s.lo} · <span style="color:#E0A100">★</span> ${s.r}</div>
-<div class="mu">🕒 ${rg(a,b)} · <span data-cd="${b}"></span></div>
+<div class="mu">🕒 ${rg(a,b)}</div>
 <div class="pl" style="margin-top:6px"><span class="old">${eur(s.o)}</span><span class="new">${eur(s.p)}</span></div></div></div>`}
 function cardL(s){const l=left(s),f=db.favs.includes(s.id),[a,b]=slot(s);
 return`<div class="card" data-a="shop" data-i="${s.id}" role="button" tabindex="0" style="margin-bottom:12px;display:flex;align-items:center;gap:12px;padding:12px">
 <div style="width:64px;height:64px;border-radius:18px;background:${bg(s)};display:flex;align-items:center;justify-content:center;font-size:32px">${s.ph&&s.ph[0]?'':s.e}</div>
-<div style="flex:1"><h3>${esc(s.n)}</h3><div class="mu">${s.c} · ${s.lo} · ★ ${s.r}</div><div class="mu">🕒 ${rg(a,b)} · ${l?l+' restants':'Épuisé'}</div>
-<span class="old">${eur(s.o)}</span> <span class="new">${eur(s.p)}</span></div>
+<div style="flex:1;min-width:0"><h3>${esc(s.n)}</h3><div class="mu">${s.c} · ${s.lo} · ★ ${s.r}</div><div class="mu">🕒 ${rg(a,b)}</div>
+<div class="pl"><span class="old">${eur(s.o)}</span><span class="new">${eur(s.p)}</span><span class="mu" style="margin-left:auto">${l?l+' restant'+(l>1?'s':''):'Épuisé'}</span></div></div>
 <button data-a="fav" data-i="${s.id}" aria-label="Favori" style="font-size:22px">${f?'❤️':'🤍'}</button></div>`}
 const sec=(t,l)=>`<h2>${t}</h2>`+(l.length?`<div class="hs">${l.map(cardH).join('')}</div>`:'<p class="mu">Rien pour l’instant 🌱</p>');
 const empty=(e,t,s)=>`<div class="empty"><b>${e}</b><h3>${t}</h3><p>${s}</p></div>`;
@@ -487,7 +492,7 @@ nv.style.display='flex';m.style.padding='';m.style.background=tab=='p'?'#F4F4F2'
 m.innerHTML=({d:Dd,b:Bb,f:Ff,o:Oo,p:Pp})[tab]();if(tab=='b')BL();
 nv.innerHTML=[['d','<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M2.3 12.7L6.1 9V3.85H8.6V6.3L12.1 2.8L21.9 12.7"/><path d="M4.8 12.5V20.3H9.2V13.2H15V20.3H19.5V12.5"/></svg>','Découvrir'],['b','<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><circle cx="9.6" cy="9.6" r="7"/><path d="M14.7 14.7L22 22"/></svg>','Parcourir'],['f','<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M11.9 19.9L5.2 13.6C3 11.5 2.3 10 2.3 8.3C2.3 4.9 5 2.7 7.5 2.7C9.2 2.7 10.7 3.6 11.9 5.3C13.1 3.6 14.6 2.7 16.3 2.7C19 2.7 21.8 4.9 21.8 8.3C21.8 10 21 11.5 18.8 13.6Z"/></svg>','Favoris'],['o','<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><path d="M4.2 8H19.8L21 20.4Q21.1 22 19.5 22H4.5Q2.9 22 3 20.4Z"/><path d="M7.9 10.6V6.9A4.1 4.1 0 0 1 16.1 6.9V10.6"/></svg>','Commandes'],['p','<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:block"><circle cx="12" cy="7.4" r="4.4"/><path d="M3 21A9 8 0 0 1 21 21Z"/></svg>','Profil']].map(t=>`<button data-a="tab" data-i="${t[0]}" class="${tab==t[0]?'on':''}" aria-label="${t[2]}"><span>${t[1]}</span>${t[2]}</button>`).join('');
 if(ov){const d=document.createElement('div');d.className='ov'+(ov.t=='map'?' mapov':'');d.innerHTML=Ov();if(ov.t=='map')d.style.bottom=(nv.offsetHeight+12)+'px';$('#app').append(d);if(ov.t=='map')MP()}tick()}
-function tick(){document.querySelectorAll('[data-cd]').forEach(e=>{const d=e.dataset.cd-Date.now();e.textContent=d<=0?'Terminé':'⏱ '+(d>36e5?Math.floor(d/36e5)+'h ':'')+String(Math.floor(d/6e4)%60).padStart(2,'0')+':'+String(Math.floor(d/1e3)%60).padStart(2,'0')})}
+function tick(){document.querySelectorAll('[data-cd]').forEach(e=>{const d=e.dataset.cd-Date.now();e.textContent=d<=0?'Terminé':d>864e5?'⏱ '+Math.floor(d/864e5)+'j '+Math.floor(d%864e5/36e5)+'h':'⏱ '+(d>36e5?Math.floor(d/36e5)+'h ':'')+String(Math.floor(d/6e4)%60).padStart(2,'0')+':'+String(Math.floor(d/1e3)%60).padStart(2,'0')})}
 setInterval(tick,1000);
 /* ===== Actions ===== */
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,i=t.dataset.i;
