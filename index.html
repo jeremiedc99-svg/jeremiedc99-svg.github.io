@@ -191,6 +191,12 @@ input,select{background:#F8F8F8;color:#1D1D1D;border-color:#E4E4E4}input:focus,s
 .card[data-a=shop]{background:#fff;color:#1D1D1D;--tx:#1D1D1D;--mu:#6B6B6B;border:2px solid #389C9A;box-shadow:0 4px 14px rgba(56,156,154,.12)}
 .card[data-a=shop] .old{color:#8A8A8A}
 .card[data-a=shop] .logo{border-color:#fff}
+/* Effet 3D minimaliste sur les cartes de paniers : tranche pleine en bas + ombre douce, la carte s'enfonce au toucher */
+.card[data-a=shop]{--edge:#2B807E}.cp2{--edge:#CFE4E3}.mc{--edge:#DADADA}.mc.sel{--edge:#E3BE45}.lc{--edge:#1F5F5D}
+.card[data-a=shop],.cp2,.mc,.lc{box-shadow:0 4px 0 var(--edge),0 12px 20px rgba(29,29,29,.08);transition:transform .15s,box-shadow .15s}
+@media(hover:hover){.card[data-a=shop]:hover,.cp2:hover,.mc:hover,.lc:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--edge),0 14px 22px rgba(29,29,29,.1)}}
+.card[data-a=shop]:active,.cp2:active,.mc:active,.lc:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge),0 3px 8px rgba(29,29,29,.08)}
+.hs:has(.card),.hs:has(.lc){padding-bottom:18px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style></head><body>
 <div id="app"><div id="main"></div><nav id="nav" aria-label="Navigation principale"></nav></div>
