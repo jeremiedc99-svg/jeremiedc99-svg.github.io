@@ -655,9 +655,9 @@ return`<button class="back" data-a="shop" data-i="${s.id}" aria-label="Retour">�
 <div class="row"><div style="flex:1"><label class="lbl" for="ce">Expiration</label><input id="ce" value="12/29"></div><div style="flex:1"><label class="lbl" for="cv">CVC</label><input id="cv" value="123" inputmode="numeric"></div></div>
 <div class="err" id="er" role="alert"></div></div><div class="bar"><button class="btn full" data-a="conf">Payer ${eur(tot)}</button></div>`}
 if(o.t=='ok'){const x=o.o,s=byId(x.sid);return`<div class="bd2" style="text-align:center;padding-top:40px"><div style="font-size:70px">🎉</div><h1>Merci, vous sauvez un repas !</h1>
-<p class="mu">${s.e} ${esc(s.n)} · ${pk(x.q)}<br>Retrait ${rg(x.a,x.b)}</p><div style="margin:20px 0">${qrSvg(x.code)}</div><h2 style="margin:0">Code ${x.code}</h2><p class="mu">Présentez ce code au commerçant.</p></div>
+<p class="mu">${s.e} ${esc(s.n)} · ${pk(x.q)}<br>Retrait ${rg(x.a,x.b)}</p><div style="margin:20px 0">${qrSvg(x.code)}</div><h2 style="margin:0;justify-content:center">Code ${x.code}</h2><p class="mu">Présentez ce code au commerçant.</p></div>
 <div class="bar"><button class="btn full" data-a="goo">Voir mes commandes</button></div>`}
-if(o.t=='qr'){const x=db.orders.find(q=>q.id==o.id);return`<div class="bd2" style="text-align:center;padding-top:60px"><h1>Code ${x.code}</h1><div style="margin:20px 0">${qrSvg(x.code)}</div></div><div class="bar"><button class="btn full" data-a="close">Fermer</button></div>`}}
+if(o.t=='qr'){const x=db.orders.find(q=>q.id==o.id);return`<div class="bd2" style="text-align:center;padding-top:120px"><h1 style="text-align:center">Code ${x.code}</h1><div style="margin:20px 0">${qrSvg(x.code)}</div></div><div class="bar"><button class="btn full" data-a="close">Fermer</button></div>`}}
 /* ===== Onboarding / rendu ===== */
 const OB=[['🥖','Des paniers surprise','Les commerçants près de chez vous proposent leurs invendus à prix doux.'],['🌍','Moins de gaspillage','Chaque panier sauvé, ce sont des kilos de nourriture qui ne finissent pas à la poubelle.'],['💚','Vous y gagnez aussi','Jusqu’à −70 % sur de bons produits. Simple, local, gourmand.']];
 function R(){const m=$('#main'),nv=$('#nav');stopScan();if(!db.user)rtSub();$('.ov')?.remove();
