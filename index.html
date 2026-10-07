@@ -268,7 +268,7 @@ function mapShop(r){return{id:r.id,k:parseInt(r.id.slice(0,6),16),ow:r.owner_id,
 async function loadShops(){if(!sb)return;const{data,error}=await sb.from('shops').select('*').eq('active',true).order('created_at',{ascending:false});if(error){toast('Chargement des commerces impossible');return}S=data.map(mapShop)}
 async function loadMine(){const u=db.user.id,[o,f,m]=await Promise.all([sb.from('orders').select('*').eq('customer_id',u).order('created_at',{ascending:false}),sb.from('favorites').select('shop_id').eq('user_id',u),sb.from('merchants').select('*').eq('id',u).maybeSingle()]);
 db.orders=(o.data||[]).map(r=>({id:r.id,sid:r.shop_id,q:r.qty,t:r.total_rs,code:r.code,a:Date.parse(r.slot_start),b:Date.parse(r.slot_end),st:r.status=='upcoming'?'u':r.status=='done'?'d':'c',rv:r.rating}));
-db.favs=(f.data||[]).map(x=>x.shop_id);const g=m.data;db.merch=g?{email:g.contact_email,st:g.status=='approved'?'ok':g.status=='pending'?'p':'none'}:{email:'',st:'none'};save()}
+rtSub();db.favs=(f.data||[]).map(x=>x.shop_id);const g=m.data;db.merch=g?{email:g.contact_email,st:g.status=='approved'?'ok':g.status=='pending'?'p':'none'}:{email:'',st:'none'};save()}
 async function start(u,isNew){db.user={id:u.id,name:u.user_metadata?.name||u.user_metadata?.full_name||'Ami(e)',email:u.email};db.seen=true;save();await Promise.all([loadShops(),loadMine()]);tab='d';ov=(isNew||Date.now()-Date.parse(u.created_at)<36e5)&&!(db.howSeen||{})[u.id]?{t:'how'}:null;R();toast('Bienvenue '+db.user.name+' 🌿')}
 async function boot(){if(!sb){toast('Connexion au serveur impossible');return}const{data}=await sb.auth.getSession(),u=data.session?.user;
 if(!u){if(db.user){db.user=null;save()}await loadShops();R();return}
@@ -440,7 +440,11 @@ let pchk=false;
 async function pickCheck(){if(pchk||!sb||!db.user||document.hidden)return;const up=db.orders.filter(o=>o.st=='u');if(!up.length)return;pchk=true;
 try{const{data}=await sb.from('orders').select('id,status').in('id',up.map(o=>o.id)),dn=(data||[]).filter(r=>r.status=='done'&&up.some(o=>o.id==r.id));
 if(dn.length){await loadMine();ov={t:'picked',id:dn[0].id};R();confetti();if(navigator.vibrate)navigator.vibrate([120,60,120])}}catch(e){}pchk=false}
-setInterval(pickCheck,5000);document.addEventListener('visibilitychange',pickCheck);
+let rt=null,rtUid=null;
+function rtSub(){try{if(!sb||!sb.channel)return;if(!db.user){if(rt){sb.removeChannel(rt);rt=null;rtUid=null}return}
+if(rtUid==db.user.id)return;if(rt)sb.removeChannel(rt);rtUid=db.user.id;
+rt=sb.channel('orders-'+db.user.id).on('postgres_changes',{event:'UPDATE',schema:'public',table:'orders',filter:'customer_id=eq.'+db.user.id},()=>pickCheck()).subscribe()}catch(e){}}
+setInterval(pickCheck,2000);document.addEventListener('visibilitychange',pickCheck);window.addEventListener('focus',pickCheck);
 /* ===== Emojis -> icônes aux couleurs de l'appli (remplacement automatique à l'affichage) ===== */
 const EK={'📍':'pin','🕒':'clock','🕐':'clock','⏱':'timer','⏳':'hour','✅':'ok','❌':'no','❤':'heartf','🤍':'heart','🔔':'bell','🔕':'bellx','📷':'cam','🌱':'sprout','🛡':'shield','💚':'heartf','🌍':'globe','🏪':'store','🥖':'bread','🍽':'fork','🛒':'cart','🧁':'cake','🥫':'can','🧺':'basket','🌿':'leaf','📧':'mail','📨':'mail','🏠':'home','✨':'spark','🔥':'flame','💸':'money','☰':'list','🗺':'map','🔎':'search','🔍':'search','📜':'receipt','🥈':'medal','🏆':'trophy','💰':'coin','🔒':'lock','➕':'plus','⚖':'scale','⚠':'warn','⭐':'star','🎉':'party','🔄':'refresh','🗑':'trash','👋':'','🛍':'bag'};
 const EP={pin:'<path d="M12 21s-7-6.2-7-11.2A7 7 0 0 1 19 9.8C19 14.8 12 21 12 21z"/><circle cx="12" cy="10" r="2.5"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/>',hour:'<path d="M6 3h12M6 21h12"/><path d="M8 3v3.5L12 12l-4 5.5V21M16 3v3.5L12 12l4 5.5V21"/>',ok:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',no:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
@@ -656,7 +660,7 @@ if(o.t=='ok'){const x=o.o,s=byId(x.sid);return`<div class="bd2" style="text-alig
 if(o.t=='qr'){const x=db.orders.find(q=>q.id==o.id);return`<div class="bd2" style="text-align:center;padding-top:60px"><h1>Code ${x.code}</h1><div style="margin:20px 0">${qrSvg(x.code)}</div></div><div class="bar"><button class="btn full" data-a="close">Fermer</button></div>`}}
 /* ===== Onboarding / rendu ===== */
 const OB=[['🥖','Des paniers surprise','Les commerçants près de chez vous proposent leurs invendus à prix doux.'],['🌍','Moins de gaspillage','Chaque panier sauvé, ce sont des kilos de nourriture qui ne finissent pas à la poubelle.'],['💚','Vous y gagnez aussi','Jusqu’à −70 % sur de bons produits. Simple, local, gourmand.']];
-function R(){const m=$('#main'),nv=$('#nav');stopScan();$('.ov')?.remove();
+function R(){const m=$('#main'),nv=$('#nav');stopScan();if(!db.user)rtSub();$('.ov')?.remove();
 if(!db.user){nv.style.display='none';m.style.padding=0;m.innerHTML=ob<3?`<div class="ob" style="min-height:100%;position:relative"><div class="langtop">${langSw('lt')}</div><div class="em">${OB[ob][0]}</div><h1>${OB[ob][1]}</h1><p class="mu">${OB[ob][2]}</p><div class="dots">${OB.map((_,i)=>`<span class="${i==ob?'on':''}"></span>`).join('')}</div><button class="btn full" data-a="onx">${ob<2?'Suivant':'C’est parti'}</button></div>`
 :`<div class="ob" style="min-height:100%;align-items:stretch;text-align:left;justify-content:center;gap:0;position:relative"><div class="langtop">${langSw('lt')}</div><img src="icon-512.png" alt="Zero Gaspi" style="display:block;margin:0 auto;width:104px;height:104px;border-radius:26px;box-shadow:0 8px 24px rgba(43,128,126,.25)"><h1 style="text-align:center;margin-top:14px">Bienvenue</h1><p class="mu" style="text-align:center;margin-bottom:8px">Connectez-vous pour sauver des paniers près de chez vous.</p>
 <button class="sso g" data-a="oauth" data-i="google">${GOOGLE_G}<span>Continuer avec Google</span></button>
