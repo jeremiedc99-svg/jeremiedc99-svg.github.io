@@ -218,6 +218,17 @@ h2 .ei{color:#2B807E}
 .card .tag{background:#E3F3F2;color:#1D1D1D}
 
 .sfr{position:absolute;inset:18%;border:3px solid #FEDB71;border-radius:20px;box-shadow:0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
+/* Boutons : même taille de texte partout, le bouton s'allonge si le texte est long */
+.btn,.chip,.tl,.sso span{white-space:nowrap}
+.btn{font-size:16px;padding-left:24px;padding-right:24px}
+.chip,.chip.cp{font-size:14px;padding-left:16px;padding-right:16px}
+.tl{font-size:14px}
+.bar.row .btn{flex:1 0 auto!important}
+/* Étoiles aux couleurs de l'appli */
+.st{fill:#fff;stroke:#7FC2C0;stroke-width:1.7;stroke-linejoin:round;flex:none}.st.on{fill:#FEDB71;stroke:#389C9A}
+.stars{display:inline-flex;gap:2px;align-items:center;vertical-align:middle}.mu .st,.sm2 .st,.sm .st{vertical-align:-2px}
+.rvst{display:flex;gap:4px;margin:6px 0 16px}.rvst button{min-height:44px;padding:0 3px}
+textarea{font:inherit;color:#1D1D1D;background:#F8F8F8;border:1.5px solid #E4E4E4;border-radius:16px;padding:12px;width:100%;resize:none}textarea:focus{outline:3px solid rgba(56,156,154,.3);border-color:#389C9A}
 /* Langue */
 .lang{display:inline-flex;background:rgba(255,255,255,.2);border-radius:99px;padding:3px;gap:2px}
 .lang button{min-height:32px;padding:0 14px;border-radius:99px;font-weight:800;font-size:13px;color:#fff;background:transparent}
@@ -268,7 +279,7 @@ const MS=()=>S.filter(s=>s.ow==db.user.id);
 function mapShop(r){return{id:r.id,k:parseInt(r.id.slice(0,6),16),ow:r.owner_id,n:r.name,e:EM[r.category]||'🧺',c:r.category,p:r.price_rs,o:r.original_rs,st:r.stock,lo:r.locality||'Maurice',r:r.rating||4.5,t0:Date.parse(r.slot_start),t1:Date.parse(r.slot_end),ds:r.description||'Paniers surprise à prix réduit.',ad:r.address,lat:r.lat,lng:r.lng,al:r.allergens||'À préciser',h:parseInt(r.id.slice(0,4),16)%360,nw:1,v:r.vegetarian,ph:r.photos||[],cr:Date.parse(r.created_at),kg:Number(r.weight_kg)||1}}
 async function loadShops(){if(!sb)return;const{data,error}=await sb.from('shops').select('*').eq('active',true).order('created_at',{ascending:false});if(error){toast('Chargement des commerces impossible');return}S=data.map(mapShop)}
 async function loadMine(){const u=db.user.id,[o,f,m]=await Promise.all([sb.from('orders').select('*').eq('customer_id',u).order('created_at',{ascending:false}),sb.from('favorites').select('shop_id').eq('user_id',u),sb.from('merchants').select('*').eq('id',u).maybeSingle()]);
-db.orders=(o.data||[]).map(r=>({id:r.id,sid:r.shop_id,q:r.qty,t:r.total_rs,code:r.code,a:Date.parse(r.slot_start),b:Date.parse(r.slot_end),st:r.status=='upcoming'?'u':r.status=='done'?'d':'c',rv:r.rating}));
+db.orders=(o.data||[]).map(r=>({id:r.id,sid:r.shop_id,q:r.qty,t:r.total_rs,code:r.code,a:Date.parse(r.slot_start),b:Date.parse(r.slot_end),st:r.status=='upcoming'?'u':r.status=='done'?'d':'c',rv:r.rating,cm:r.review_comment}));
 rtSub();db.favs=(f.data||[]).map(x=>x.shop_id);const g=m.data;db.merch=g?{email:g.contact_email,st:g.status=='approved'?'ok':g.status=='pending'?'p':'none'}:{email:'',st:'none'};save()}
 async function start(u,isNew){db.user={id:u.id,name:u.user_metadata?.name||u.user_metadata?.full_name||'Ami(e)',email:u.email};db.seen=true;save();await Promise.all([loadShops(),loadMine()]);tab='d';ov=(isNew||Date.now()-Date.parse(u.created_at)<36e5)&&!(db.howSeen||{})[u.id]?{t:'how'}:null;R();toast('Bienvenue '+db.user.name+' 🌿')}
 async function boot(){if(!sb){toast('Connexion au serveur impossible');return}const{data}=await sb.auth.getSession(),u=data.session?.user;
@@ -385,7 +396,7 @@ const D={
 'Chargement des commerces impossible':'Couldn’t load shops','Connexion au serveur impossible':'Can’t reach the server','Favori non synchronisé':'Favourite not synced','Ajouté !':'Added!','Ajouté ! Vous serez prévenu des nouveaux paniers.':'Added! You’ll be notified of new baskets.','Retiré des favoris':'Removed from favourites','Commande annulée':'Order cancelled','Merci pour votre avis':'Thanks for your review','Notifications activées':'Notifications on','Notifications désactivées':'Notifications off','Localisation indisponible sur cet appareil.':'Location unavailable on this device.','Recherche de votre position…':'Finding your location…','Position activée : tri par distance':'Location on: sorted by distance','Position refusée ou indisponible.':'Location denied or unavailable.','Tri : plus proche':'Sort: nearest','Tri : prix croissant':'Sort: lowest price','Tri : plus récent':'Sort: newest',
 'Envoi des photos…':'Uploading photos…','Envoi des photos impossible':'Couldn’t upload photos','Photos non enregistrées':'Photos not saved','Photos publiées':'Photos published','Photo supprimée':'Photo deleted','Suppression impossible':'Deletion impossible','Modifications enregistrées':'Changes saved','Enregistrement impossible':'Couldn’t save','Le prix du panier doit être inférieur à la valeur.':'The basket price must be lower than its value.','Indiquez le poids du panier en kg.':'Enter the basket weight in kg.','Indiquez les allergènes (ou « Aucun allergène », sans mélanger les deux).':'Select the allergens (or “No allergens”, without mixing both).','Indiquez les allergènes du panier (ou « Aucun allergène », sans mélanger les deux).':'Select the basket allergens (or “No allergens”, without mixing both).',
 'Indiquez un nom, un prix de panier inférieur à la valeur, une quantité et le poids du panier en kg.':'Enter a name, a basket price lower than its value, a quantity and the basket weight in kg.','Indiquez une adresse à Maurice : choisissez une ville ou un village dans la liste.':'Enter an address in Mauritius: choose a town or village from the list.','Indiquez une date et un créneau de retrait valides (dans le futur).':'Enter a valid pickup date and slot (in the future).',
-'Code invalide, ou commande non payée':'Invalid code, or order not paid','Retrait confirmé !':'Pickup confirmed!','Date invalide':'Invalid date','Choisissez une date à venir':'Choose a future date','Paniers renouvelés':'Baskets renewed','Mise à jour impossible':'Couldn’t update','Annonce supprimée':'Listing deleted','Prénom mis à jour':'First name updated','Indiquez un prénom.':'Enter a first name.','Autorisation accordée ! Ouvrez votre espace commerçant.':'Authorisation granted! Open your merchant area.','Votre compte a été supprimé.':'Your account has been deleted.','Combien de paniers ?':'How many baskets?','Date de retrait (AAAA-MM-JJ)':'Pickup date (YYYY-MM-DD)','Supprimer cette photo ?':'Delete this photo?','Renouveler les paniers':'Renew baskets','Nombre de paniers':'Number of baskets','Le créneau horaire reste le même.':'The pickup time stays the same.','Indiquez une quantité valide.':'Enter a valid quantity.','Cette action est définitive.':'This action is permanent.','Scanner le QR code':'Scan QR code','Placez le QR code du client dans le cadre.':'Place the customer’s QR code inside the frame.','Caméra refusée ou indisponible. Saisissez le code à la main.':'Camera denied or unavailable. Enter the code manually.','Lecteur indisponible. Saisissez le code à la main.':'Scanner unavailable. Enter the code manually.','Ouverture de la caméra…':'Opening the camera…','Scanner un autre':'Scan another','Merci d’avoir sauvé un repas. Bon appétit !':'Thank you for saving a meal. Enjoy!','Noter mon panier':'Rate my basket','Retour à mon espace':'Back to my area'
+'Code invalide, ou commande non payée':'Invalid code, or order not paid','Retrait confirmé !':'Pickup confirmed!','Date invalide':'Invalid date','Choisissez une date à venir':'Choose a future date','Paniers renouvelés':'Baskets renewed','Mise à jour impossible':'Couldn’t update','Annonce supprimée':'Listing deleted','Prénom mis à jour':'First name updated','Indiquez un prénom.':'Enter a first name.','Autorisation accordée ! Ouvrez votre espace commerçant.':'Authorisation granted! Open your merchant area.','Votre compte a été supprimé.':'Your account has been deleted.','Combien de paniers ?':'How many baskets?','Date de retrait (AAAA-MM-JJ)':'Pickup date (YYYY-MM-DD)','Supprimer cette photo ?':'Delete this photo?','Renouveler les paniers':'Renew baskets','Nombre de paniers':'Number of baskets','Le créneau horaire reste le même.':'The pickup time stays the same.','Indiquez une quantité valide.':'Enter a valid quantity.','Cette action est définitive.':'This action is permanent.','Scanner le QR code':'Scan QR code','Placez le QR code du client dans le cadre.':'Place the customer’s QR code inside the frame.','Caméra refusée ou indisponible. Saisissez le code à la main.':'Camera denied or unavailable. Enter the code manually.','Lecteur indisponible. Saisissez le code à la main.':'Scanner unavailable. Enter the code manually.','Ouverture de la caméra…':'Opening the camera…','Scanner un autre':'Scan another','Votre avis':'Your review','Votre note':'Your rating','Ajouter un commentaire (facultatif)':'Add a comment (optional)','Qu’avez-vous pensé de votre panier ?':'What did you think of your basket?','300 caractères max.':'300 characters max.','Publier mon avis':'Post my review','Laisser un avis':'Leave a review','Choisissez une note de 1 à 5 étoiles.':'Choose a rating from 1 to 5 stars.','Merci pour votre avis !':'Thanks for your review!','Aucun avis pour l’instant.':'No reviews yet.','Chargement…':'Loading…','Merci d’avoir sauvé un repas. Bon appétit !':'Thank you for saving a meal. Enjoy!','Noter mon panier':'Rate my basket','Retour à mon espace':'Back to my area'
 };
 const bk=n=>n>1?'baskets':'basket';
 const PT=[
@@ -401,7 +412,7 @@ const PT=[
 [/^Panier disponible chez (.+) !$/,(a,n)=>'Basket available at '+n+'!'],[/^(.+) : un panier est disponible !$/,(a,n)=>n+': a basket is available!'],
 [/^(.+) est en ligne !$/,(a,n)=>n+' is live!'],[/^Photo de (.+)$/,(a,n)=>'Photo of '+n],[/^(\d) étoiles$/,(a,n)=>n+' stars'],
 [/^Connexion avec (.+) bientôt disponible\.$/,(a,n)=>'Sign-in with '+n+' coming soon.'],
-[/^(Action|Réservation|Demande|Suppression|Modification|Publication) impossible : (.+)$/,(a,w,m)=>({Action:'Action',Réservation:'Reservation',Demande:'Request',Suppression:'Deletion',Modification:'Change',Publication:'Publishing'}[w])+' failed: '+m]
+[/^(Action|Réservation|Demande|Suppression|Modification|Publication|Avis) impossible : (.+)$/,(a,w,m)=>({Action:'Action',Réservation:'Reservation',Demande:'Request',Suppression:'Deletion',Modification:'Change',Publication:'Publishing',Avis:'Review'}[w])+' failed: '+m]
 ];
 const SKIP=/^(SCRIPT|STYLE|TEXTAREA)$/;
 function trs(s){if(!isEN()||!s)return s;const m=/^([\s\p{Extended_Pictographic}️]*)([\s\S]*?)([\s\p{Extended_Pictographic}️]*)$/u.exec(s),c=m[2].replace(/\s+/g,' ');if(!c)return s;
@@ -455,6 +466,15 @@ const WALK=`<svg viewBox="0 0 280 100" width="270" aria-hidden="true" style="dis
 <line x1="0" y1="-42" x2="0" y2="-22" stroke="#2B807E" stroke-width="9" stroke-linecap="round"/>
 <line x1="0" y1="-38" x2="0" y2="-26" stroke="#2B807E" stroke-width="4.5" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" values="-30 0 -38;30 0 -38;-30 0 -38" dur="0.9s" repeatCount="indefinite"/></line>
 <circle cx="0" cy="-52" r="8" fill="#FEDB71" stroke="#2B807E" stroke-width="2.5"/></g></g></svg>`;
+/* ===== Avis & commentaires ===== */
+let rvS=0;const RV={};
+const rvHtml=id=>{const L=RV[id];if(!L)return'<p class="mu">Chargement…</p>';return L.length?L.map(r=>`<div class="card" style="padding:12px;margin-bottom:8px"><div class="row sp"><b>${esc(r.name||'Client')}</b>${stars(r.rating,14)}</div>${r.comment?`<p class="mu" style="margin-top:6px">${esc(r.comment)}</p>`:''}</div>`).join(''):'<p class="mu">Aucun avis pour l’instant.</p>'};
+async function loadRev(id){try{const{data,error}=await sb.rpc('shop_reviews',{p_shop:id});RV[id]=error?[]:(data||[])}catch(e){RV[id]=[]}if(ov&&ov.t=='shop'&&ov.id==id){const b=$('#rvl');if(b)b.innerHTML=rvHtml(id)}}
+const rvStars=()=>[1,2,3,4,5].map(n=>`<button type="button" data-a="rvs" data-i="${n}" aria-label="${n} étoiles">${sv(n<=rvS,36)}</button>`).join('');
+async function sendReview(id){const E=x=>{const e=$('#er');if(e)e.textContent=x};if(!(rvS>=1))return E('Choisissez une note de 1 à 5 étoiles.');
+const btn=$('[data-a=rvsend]');if(btn)btn.disabled=true;const{error}=await sb.rpc('review_order',{p_order:id,p_rating:rvS,p_comment:($('#rvc').value||'').trim()});
+if(error){if(btn)btn.disabled=false;return E('Avis impossible : '+error.message)}
+ov=null;tab='o';ot='p';await Promise.all([loadShops(),loadMine()]);R();toast('Merci pour votre avis !')}
 /* ===== Emojis -> icônes aux couleurs de l'appli (remplacement automatique à l'affichage) ===== */
 const EK={'📍':'pin','🕒':'clock','🕐':'clock','⏱':'timer','⏳':'hour','✅':'ok','❌':'no','❤':'heartf','🤍':'heart','🔔':'bell','🔕':'bellx','📷':'cam','🌱':'sprout','🛡':'shield','💚':'heartf','🌍':'globe','🏪':'store','🥖':'bread','🍽':'fork','🛒':'cart','🧁':'cake','🥫':'can','🧺':'basket','🌿':'leaf','📧':'mail','📨':'mail','🏠':'home','✨':'spark','🔥':'flame','💸':'money','☰':'list','🗺':'map','🔎':'search','🔍':'search','📜':'receipt','🥈':'medal','🏆':'trophy','💰':'coin','🔒':'lock','➕':'plus','⚖':'scale','⚠':'warn','⭐':'star','🎉':'party','🔄':'refresh','🗑':'trash','👋':'','🛍':'bag'};
 const EP={pin:'<path d="M12 21s-7-6.2-7-11.2A7 7 0 0 1 19 9.8C19 14.8 12 21 12 21z"/><circle cx="12" cy="10" r="2.5"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/>',hour:'<path d="M6 3h12M6 21h12"/><path d="M8 3v3.5L12 12l-4 5.5V21M16 3v3.5L12 12l4 5.5V21"/>',ok:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',no:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
@@ -474,14 +494,15 @@ const OAUTH={google:false,facebook:false}; /* passez à true une fois le fournis
 let emOpen=false;
 const GOOGLE_G='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
 const FB_F='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg>';
-const SR=[['Marie','Super panier, très généreux !',5],['Karim','Bon rapport qualité-prix.',4]];
 /* ===== Utilitaires ===== */
 const $=s=>document.querySelector(s),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const eur=n=>'Rs\u00A0'+Math.round(n),hm=t=>new Date(t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit'});
 const slot=s=>[s.t0,s.t1];
 const left=s=>s.t1>Date.now()?s.st:0;
 const byId=i=>S.find(s=>s.id==i);
-const stars=r=>'★'.repeat(Math.round(r))+'☆'.repeat(5-Math.round(r));
+const STP='<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>';
+const sv=(on,z=15)=>`<svg class="st ${on?'on':''}" viewBox="0 0 24 24" width="${z}" height="${z}" aria-hidden="true">${STP}</svg>`;
+const stars=(r,z=15)=>`<span class="stars" role="img" aria-label="${Math.round(r)}/5">${[1,2,3,4,5].map(i=>sv(i<=Math.round(r),z)).join('')}</span>`;
 let tab='d',ov=null,F={q:'',cat:'',max:10000,slot:'',av:false,sort:'d',view:'l',last:false,fo:false},ob=db.seen?3:0,tmo;
 function toast(m){clearTimeout(tmo);document.querySelector('.toast')?.remove();const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m.replace(/[\p{Extended_Pictographic}\uFE0F]/gu,'').replace(/\s+/g,' ').trim();$('#app').append(t);tmo=setTimeout(()=>t.remove(),2800)}
 function confetti(){for(let i=0;i<60;i++){const c=document.createElement('i');c.className='cf';c.style.left=Math.random()*100+'%';c.style.background=['#F2683C','#0E6B5C','#F5C84B','#7BD3B5'][i%4];c.style.animationDelay=Math.random()*.5+'s';$('#app').append(c);setTimeout(()=>c.remove(),3000)}}
@@ -492,13 +513,13 @@ function cardH(s){const l=left(s),f=db.favs.includes(s.id),[a,b]=slot(s);
 return`<div class="card sc" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}">${ban(s)}
 <span class="badge ${l?'':'out'}">${l?l+' restant'+(l>1?'s':''):'Épuisé'}</span><span class="cdp2" data-cd="${b}"></span>
 <button class="heart" data-a="fav" data-i="${s.id}" aria-label="${f?'Retirer des':'Ajouter aux'} favoris">${f?'❤️':'🤍'}</button>
-<div class="bd"><h3>${esc(s.n)}</h3><div class="mu">${cn(s.c)} · ${s.lo} · <span style="color:#E0A100">★</span> ${s.r}</div>
+<div class="bd"><h3>${esc(s.n)}</h3><div class="mu">${cap(s.c)} · ${s.lo} · ${sv(1,13)} ${s.r}</div>
 <div class="mu">🕒 ${rg(a,b)}</div>
 <div class="pl" style="margin-top:6px"><span class="old">${eur(s.o)}</span><span class="new">${eur(s.p)}</span></div></div></div>`}
 function cardL(s){const l=left(s),f=db.favs.includes(s.id),[a,b]=slot(s);
 return`<div class="card" data-a="shop" data-i="${s.id}" role="button" tabindex="0" style="margin-bottom:12px;display:flex;align-items:center;gap:12px;padding:12px">
 <div style="width:64px;height:64px;border-radius:18px;background:${bg(s)};display:flex;align-items:center;justify-content:center;font-size:32px">${s.ph&&s.ph[0]?'':s.e}</div>
-<div style="flex:1;min-width:0"><h3>${esc(s.n)}</h3><div class="mu">${cn(s.c)} · ${s.lo} · ★ ${s.r}</div><div class="mu">🕒 ${rg(a,b)}</div>
+<div style="flex:1;min-width:0"><h3>${esc(s.n)}</h3><div class="mu">${cap(s.c)} · ${s.lo} · ${sv(1,13)} ${s.r}</div><div class="mu">🕒 ${rg(a,b)}</div>
 <div class="pl"><span class="old">${eur(s.o)}</span><span class="new">${eur(s.p)}</span><span class="mu" style="margin-left:auto">${l?l+' restant'+(l>1?'s':''):'Épuisé'}</span></div></div>
 <button data-a="fav" data-i="${s.id}" aria-label="Favori" style="font-size:22px">${f?'❤️':'🤍'}</button></div>`}
 const sec=(t,l)=>`<h2>${t}</h2>`+(l.length?`<div class="hs">${l.map(cardH).join('')}</div>`:'<p class="mu">Rien pour l’instant 🌱</p>');
@@ -526,16 +547,16 @@ function mapList(){const n=Date.now();return S.filter(s=>(!MF.q||(s.n+s.c+s.ds).
 .sort((a,b)=>F.sort=='n'&&me?(dk(a)??1e9)-(dk(b)??1e9):F.sort=='p'?a.p-b.p:b.cr-a.cr)}
 function mpin(s){const[x,y]=mpos(s),se=mapSel==s.id;return`<button class="mpin ${se?'sel':''} ${left(s)?'':'out'}" style="left:${x}%;top:${y}%" data-a="mpin" data-i="${s.id}" aria-label="${esc(s.n)}"><span>${s.e}</span>${se?`<b>${eur(s.p)}</b>`:''}</button>`}
 function mcard(s){const l=left(s),[a,b]=slot(s),p=phBg(s),se=mapSel==s.id;
-return`<div class="mc ${se?'sel':''}" data-a="mcard" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ★ ${s.r}</div><div class="sm2">${l?'Retrait '+dl(a)+hh(a)+'–'+hh(b)+' · '+l+' restant'+(l>1?'s':''):'Épuisé'}</div><div class="pl"><span class="old">${eur(s.o)}</span><span class="pp">${eur(s.p)}</span></div></div></div>`}
+return`<div class="mc ${se?'sel':''}" data-a="mcard" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ${sv(1,13)} ${s.r}</div><div class="sm2">${l?'Retrait '+dl(a)+hh(a)+'–'+hh(b)+' · '+l+' restant'+(l>1?'s':''):'Épuisé'}</div><div class="pl"><span class="old">${eur(s.o)}</span><span class="pp">${eur(s.p)}</span></div></div></div>`}
 function MP(){const pe=$('#mpins');if(!pe)return;const L=mapList();if(!L.find(s=>s.id==mapSel))mapSel=L[0]?L[0].id:null;
 const u=me?mxy(me.lat,me.lng):null;
 pe.innerHTML=(u?`<i class="udot" style="left:${u[0]}%;top:${u[1]}%"></i>`:'')+L.filter(s=>s.id!=mapSel).map(mpin).join('')+L.filter(s=>s.id==mapSel).map(mpin).join('');
 $('#mcount').textContent=L.length+' panier'+(L.length>1?'s':'')+(me?' autour de vous':' à Maurice');
 $('#mlist').innerHTML=L.length?L.map(mcard).join(''):empty('📍','Aucun panier','Essayez un autre filtre.');tick()}
 function lcard(s){const l=left(s),[a,b]=slot(s),p=phBg(s);
-return`<div class="lc" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="lct" style="${p?'background:'+p:''}"><span class="bdg">Plus que ${l}</span><span class="cdp" data-cd="${b}"></span>${p?'':`<span class="lci">${s.e}</span>`}</div><div class="lcb"><div><b>${esc(s.n)}</b><div class="sm">${esc(dist(s))} · ★ ${s.r} · ${hh(a)}–${hh(b)}</div></div><span class="pr">${eur(s.p)}</span></div></div>`}
+return`<div class="lc" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="lct" style="${p?'background:'+p:''}"><span class="bdg">Plus que ${l}</span><span class="cdp" data-cd="${b}"></span>${p?'':`<span class="lci">${s.e}</span>`}</div><div class="lcb"><div><b>${esc(s.n)}</b><div class="sm">${esc(dist(s))} · ${sv(1,13)} ${s.r} · ${hh(a)}–${hh(b)}</div></div><span class="pr">${eur(s.p)}</span></div></div>`}
 function cardP(s){const l=left(s),[a,b]=slot(s),p=phBg(s);
-return`<div class="cp2" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ★ ${s.r}</div><div class="sm2">${l?rg(a,b):'Épuisé'}</div><div class="pl"><span class="old">${eur(s.o)}</span><b>${eur(s.p)}</b></div></div></div>`}
+return`<div class="cp2" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="tile" style="background:${p||TINT(s.c)}">${p?'':s.e}</div><div class="cpi"><b>${esc(s.n)}</b><div class="sm2">${cap(s.c)} · ${esc(dist(s))} · ${sv(1,13)} ${s.r}</div><div class="sm2">${l?rg(a,b):'Épuisé'}</div><div class="pl"><span class="old">${eur(s.o)}</span><b>${eur(s.p)}</b></div></div></div>`}
 function Bb(){const act=(db.prefs.al.length||F.slot||F.av||F.view=='m')?'<i class="dot"></i>':'',sel=(v,x)=>v==x?'selected':'';
 return`<div class="phd"><div class="row sp"><div><div class="hl">${me?'Autour de vous':'Maurice'}</div><h1>Parcourir</h1></div><button class="locb" data-a="map" aria-label="Voir la carte">${ic(PI.pin,'#fff')}</button></div>
 <div class="sbar">${ic(PI.search,'#6B6B6B')}<input id="q" type="search" placeholder="Boulangerie, pizza, légumes…" value="${esc(F.q)}" aria-label="Rechercher"><button class="fbtn" data-a="ftog" aria-label="Filtres">${ic(PI.filt)}${act}</button></div></div>
@@ -566,7 +587,7 @@ return`<div class="card oc" style="margin-bottom:16px">${ban(s)}<span class="bad
 <div class="mu">${pk(o.q)} · 🕒 ${rg(o.a,o.b)}</div><div class="mu">📍 ${ml(s)}</div>
 ${o.st=='u'?`<div class="mu">Fin du créneau : <b data-cd="${o.b}"></b></div><div class="row sp" style="margin-top:8px"><b>Code ${o.code}</b><button class="chip" data-a="qr" data-i="${o.id}">Voir le QR</button></div>
 <div class="row" style="margin-top:8px"><span class="mu">Présentez votre code au commerçant</span>${can?`<button class="btn dng" data-a="can" data-i="${o.id}">Annuler</button>`:''}</div>`
-:o.st=='c'?'<p class="mu">❌ Annulée</p>':`<p class="mu">✅ Récupéré</p>`+(o.rv?`<p>${stars(o.rv)}</p>`:`<div class="row">${[1,2,3,4,5].map(n=>`<button data-a="rate" data-i="${o.id}" data-n="${n}" aria-label="${n} étoiles" style="font-size:26px">☆</button>`).join('')}</div>`)}</div></div>`}).join(''):empty(ot=='u'?'🛍️':'📜',ot=='u'?'Aucune commande à venir':'Aucune commande passée','Sauvez votre premier panier surprise !'))}
+:o.st=='c'?'<p class="mu">❌ Annulée</p>':`<p class="mu">✅ Récupéré</p>`+(o.rv?`<div style="margin-top:4px">${stars(o.rv,18)}</div>${o.cm?`<p class="mu" style="margin-top:6px">“${esc(o.cm)}”</p>`:''}`:`<button class="btn full" data-a="rvo" data-i="${o.id}" style="margin-top:8px">Laisser un avis</button>`)}</div></div>`}).join(''):empty(ot=='u'?'🛍️':'📜',ot=='u'?'Aucune commande à venir':'Aucune commande passée','Sauvez votre premier panier surprise !'))}
 const BADGES=[['🌱','Première bouchée',m=>m>=1],['🥈','5 repas sauvés',m=>m>=5],['🏆','10 repas sauvés',m=>m>=10],['💰','Rs 1000 économisés',(m,e)=>e>=1000],['💚','Fan de quartier',(m,e,f)=>f>=3],['🌍','25 kg sauvés',(m,e,f,c)=>c>=25]];
 const ic=(p,c='#1D1D1D')=>`<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="${c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 const IC={person:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',bag:'<path d="M5 8h14l1 12H4z"/><path d="M8.5 10V7a3.5 3.5 0 0 1 7 0v3"/>',heart:'<path d="M11.9 19.9L5.2 13.6C3 11.5 2.3 10 2.3 8.3C2.3 4.9 5 2.7 7.5 2.7C9.2 2.7 10.7 3.6 11.9 5.3C13.1 3.6 14.6 2.7 16.3 2.7C19 2.7 21.8 4.9 21.8 8.3C21.8 10 21 11.5 18.8 13.6Z"/>',leaf:'<path d="M5 19C5 10 10 5 20 4c0 10-5 15-14 15z"/><path d="M5 19l8-8"/>',bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',store:'<path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7"/><path d="M12 17h.01"/>',logout:'<path d="M9 4H5v16h4"/><path d="M16 8l4 4-4 4"/><path d="M20 12H9"/>',trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H4v1a4 4 0 0 0 4 4"/><path d="M16 6h4v1a4 4 0 0 1-4 4"/><path d="M12 13v4"/><path d="M8 20h8"/>',chev:'<path d="M9 6l6 6-6 6"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',pen:'<path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19z"/>'};
@@ -613,6 +634,10 @@ if(o.t=='phelp')return PO('Aide &amp; contact',`<div class="card" style="padding
 <a class="mrow" href="conditions.html" target="_blank" rel="noopener"><span>Conditions d’utilisation</span>${ic(IC.chev,'#8A9794')}</a><a class="mrow" href="confidentialite.html" target="_blank" rel="noopener"><span>Politique de confidentialité</span>${ic(IC.chev,'#8A9794')}</a><a class="mrow" href="supprimer-mon-compte.html" target="_blank" rel="noopener"><span>Supprimer mon compte (page web)</span>${ic(IC.chev,'#8A9794')}</a>`);
 if(o.t=='pmerch')return PO('Espace commerçant',`<div class="card" style="padding:14px;margin-top:14px">${Mc()}</div>`);
 if(o.t=='picked'){const x=db.orders.find(q=>q.id==o.id),s=x&&byId(x.sid);return`<button class="back" data-a="close" aria-label="Fermer">✕</button><div class="bd2" style="text-align:center;padding-top:70px"><div style="font-size:84px;color:#389C9A">${eiSvg('ok')}</div><h1>Retrait confirmé !</h1>${s?`<p style="margin:6px 0"><b>${esc(s.n)}</b><br><span class="mu">${pk(x.q)}</span></p>`:''}<p style="margin:16px 0">Merci d’avoir sauvé un repas. Bon appétit !</p></div><div class="bar"><button class="btn full" data-a="pickrate">Noter mon panier</button></div>`}
+if(o.t=='review'){const x=db.orders.find(q=>q.id==o.id),s=x&&byId(x.sid);return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Votre avis</h1><p class="mu">${s?s.e+' '+esc(s.n):''}</p>
+<label class="lbl">Votre note</label><div id="rvst" class="rvst">${rvStars()}</div>
+<label class="lbl" for="rvc">Ajouter un commentaire (facultatif)</label><textarea id="rvc" maxlength="300" rows="4" placeholder="Qu’avez-vous pensé de votre panier ?"></textarea><p class="mu" style="margin-top:4px">300 caractères max.</p>
+<div class="err" id="er" role="alert"></div></div><div class="bar"><button class="btn full" data-a="rvsend" data-i="${o.id}">Publier mon avis</button></div>`}
 if(o.t=='scan')return`<button class="back" data-a="scanx" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Scanner le QR code</h1><p class="mu">Placez le QR code du client dans le cadre.</p>
 <div id="sbox" style="position:relative;margin-top:14px;border-radius:22px;overflow:hidden;background:#1D1D1D;aspect-ratio:1/1"><video id="sv" playsinline muted autoplay style="width:100%;height:100%;object-fit:cover"></video><i class="sfr"></i></div>
 <p id="sm" class="mu" style="margin-top:12px" role="status"></p><div id="sres"></div></div><div class="bar"><button class="btn full" data-a="scanx">Retour à mon espace</button></div>`;
@@ -647,13 +672,13 @@ ${form?`<h2>Ajouter un commerce</h2><label class="lbl" for="mn">Nom du commerce<
 <label class="lbl">Photos (3 max)</label><label class="chip" style="display:inline-flex;align-items:center">📷 Choisir des photos<input id="mph" type="file" accept="image/*" multiple hidden></label><div id="mpv" class="row" style="margin-top:8px"></div>
 `:`<button class="btn alt full" data-a="addm" style="margin-top:16px">➕ Ajouter un autre commerce</button>`}
 <div class="err" id="er" role="alert"></div></div>${form?'<div class="bar"><button class="btn full" data-a="madd">Publier mon commerce</button></div>':''}`}
-if(o.t=='shop'){const s=byId(o.id),l=left(s),[a,b]=slot(s),f=db.favs.includes(s.id),rv=[...(db.rev[s.id]||[]),...SR];
+if(o.t=='shop'){const s=byId(o.id),l=left(s),[a,b]=slot(s),f=db.favs.includes(s.id),rv=0;
 return`<button class="back" data-a="close" aria-label="Retour">←</button>${ban(s,'big')}<div class="bd2"><div style="height:26px"></div>
 <div class="row sp"><h1>${esc(s.n)}</h1><button data-a="fav" data-i="${s.id}" aria-label="Favori" style="font-size:26px">${f?'❤️':'🤍'}</button></div>
-<div class="mu"><span style="color:#E0A100">${stars(s.r)}</span> ${s.r} · ${cn(s.c)} · ${s.lo}</div><p style="margin:10px 0">${esc(s.ds)}</p>${(s.ph||[]).length>1?`<div class="hs">${s.ph.slice(1).map(x=>`<img src="${x}" alt="Photo de ${esc(s.n)}" style="height:110px;border-radius:16px">`).join('')}</div>`:''}
+<div class="mu">${stars(s.r)} ${s.r} · ${cap(s.c)} · ${s.lo}</div><p style="margin:10px 0">${esc(s.ds)}</p>${(s.ph||[]).length>1?`<div class="hs">${s.ph.slice(1).map(x=>`<img src="${x}" alt="Photo de ${esc(s.n)}" style="height:110px;border-radius:16px">`).join('')}</div>`:''}
 <div class="card" style="padding:14px"><p>📍 ${ml(s)}</p><p>🕐 Ouvert 7h–20h</p><p>🕒 Retrait <b>${rg(a,b)}</b> (<span data-cd="${b}"></span>)</p>
 <p>⚖️ Poids du panier : environ ${s.kg} kg</p><p>⚠️ Allergènes : ${esc(s.al).split(', ').map(x=>`<span class="tag">${x}</span>`).join('')}</p></div>
-<h2>Avis</h2>${rv.map(r=>`<div class="card" style="padding:12px;margin-bottom:8px"><b>${esc(r[0])}</b> <span style="color:#E0A100">${stars(r[2])}</span><p class="mu">${esc(r[1])}</p></div>`).join('')}</div>
+<h2>Avis</h2><div id="rvl">${rvHtml(s.id)}</div></div>
 <div class="bar row sp"><div><span class="old">${eur(s.o)}</span> <span class="new">${eur(s.p*qty)}</span></div>
 <div class="row"><button class="chip" data-a="qm" aria-label="Moins">−</button><b>${qty}</b><button class="chip" data-a="qp" aria-label="Plus">+</button></div>
 <button class="btn" data-a="pay" ${l?'':'disabled'}>${l?'Réserver':'Épuisé'}</button></div>`}
@@ -698,7 +723,7 @@ case'onx':ob++;R();break;
 case'reg':auth();break;
 case'am':am=am=='up'?'in':'up';R();break;
 case'tab':tab=i;ov=null;retMap=false;R();break;
-case'shop':qty=1;ov={t:'shop',id:i};R();break;
+case'shop':qty=1;ov={t:'shop',id:i};R();loadRev(i);break;
 case'close':ov=retMap?{t:'map'}:null;retMap=false;addMode=false;R();break;
 case'pin':{const s=byId(i);$('#pc').innerHTML=cardL(s);break}
 case'cat':F.cat=F.cat==i?'':i;R();break;
@@ -720,7 +745,7 @@ case'oauth':{if(!OAUTH[i])return toast('Connexion avec '+(i=='google'?'Google':'
 case'map':ov={t:'map'};mapSel=null;retMap=false;R();break;
 case'mapx':ov=null;retMap=false;R();break;
 case'mpin':{mapSel=i;MP();const el=document.querySelector('.mc.sel');el&&el.scrollIntoView({block:'nearest',behavior:'smooth'});break}
-case'mcard':retMap=true;qty=1;ov={t:'shop',id:i};R();break;
+case'mcard':retMap=true;qty=1;ov={t:'shop',id:i};R();loadRev(i);break;
 case'mchip':{if(i=='all'){MF.q='';MF.cat='';MF.now=false;MF.cheap=false}else if(i=='now')MF.now=!MF.now;else if(i=='cheap')MF.cheap=!MF.cheap;else MF.cat=MF.cat==i?'':i;R();break}
 case'msort':{const o2=me?['n','p','d']:['p','d'],nx=o2[(o2.indexOf(F.sort)+1)%o2.length];F.sort=nx;toast({n:'Tri : plus proche',p:'Tri : prix croissant',d:'Tri : plus récent'}[nx]);MP();break}
 case'ftog':F.fo=!F.fo;$('#fp').classList.toggle('hide',!F.fo);break;
@@ -741,7 +766,9 @@ case'esv':esv(i);break;
 case'dph':ov={t:'cph',id:i,n:+t.dataset.n};R();break;
 case'addm':addMode=true;R();break;
 case'scan':case'scan2':ov={t:'scan'};R();break;
-case'pickrate':ov=null;tab='o';ot='p';R();break;
+case'pickrate':case'rvo':rvS=0;ov={t:'review',id:a=='rvo'?i:ov.id};R();break;
+case'rvs':rvS=+i;$('#rvst').innerHTML=rvStars();break;
+case'rvsend':sendReview(i);break;
 case'slot':F.slot=i;t.parentNode.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x==t));BL();break;
 case'sort':F.sort=i;t.parentNode.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x==t));BL();break;
 case'scanx':ov={t:'mdash'};R();break;
