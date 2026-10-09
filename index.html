@@ -287,7 +287,7 @@ rtSub();db.favs=(f.data||[]).map(x=>x.shop_id);const g=m.data;db.merch=g?{email:
 async function start(u,isNew){db.user={id:u.id,name:u.user_metadata?.name||u.user_metadata?.full_name||'Ami(e)',email:u.email};db.seen=true;save();await Promise.all([loadShops(),loadMine()]);tab='d';ov=(isNew||Date.now()-Date.parse(u.created_at)<36e5)&&!(db.howSeen||{})[u.id]?{t:'how'}:null;R();toast('Bienvenue '+db.user.name+' 🌿')}
 async function boot(){if(!sb){toast('Connexion au serveur impossible');return}const{data}=await sb.auth.getSession(),u=data.session?.user;
 if(!u){if(db.user){db.user=null;save()}await loadShops();R();return}
-db.user={id:u.id,name:u.user_metadata?.name||u.user_metadata?.full_name||'Ami(e)',email:u.email};db.seen=true;save();await Promise.all([loadShops(),loadMine()]);if(!(db.howSeen||{})[u.id]&&Date.now()-Date.parse(u.created_at)<36e5)ov={t:'how'};R()}
+db.user={id:u.id,name:u.user_metadata?.name||u.user_metadata?.full_name||'Ami(e)',email:u.email};db.seen=true;save();await Promise.all([loadShops(),loadMine()]);if(!(db.howSeen||{})[u.id]&&Date.now()-Date.parse(u.created_at)<36e5)ov={t:'how'};R();if(pushOK()&&Notification.permission=='granted'&&db.prefs.notif)pushOn();if(/[?&]rate=1/.test(location.search)){tab='o';ot='p';R()}}
 async function auth(){if(!sb)return toast('Connexion au serveur impossible');const m=$('#ue').value.trim(),p=$('#up').value,n=am=='up'?$('#un').value.trim():'';
 if(!/^\S+@\S+\.\S+$/.test(m)||p.length<6||(am=='up'&&!n)){$('#er').textContent='Renseignez'+(am=='up'?' un prénom,':'')+' un e-mail valide et un mot de passe (6 caractères min.).';return}
 const r=am=='up'?await sb.auth.signUp({email:m,password:p,options:{data:{name:n}}}):await sb.auth.signInWithPassword({email:m,password:p});
@@ -357,6 +357,7 @@ const isEN=()=>db.lang==='en',LOC=()=>isEN()?'en-GB':'fr-FR';
 const CE={boulangerie:'bakery',restaurant:'restaurant','supermarché':'supermarket','pâtisserie':'pastry shop','épicerie':'grocery','végétarien':'vegetarian'};
 const cn=c=>isEN()?(CE[c]||c):c;
 const D={
+'Super !':'Great!','Un rappel pour noter votre panier ?':'A reminder to rate your basket?','Nous vous envoyons une notification 3 h après le retrait.':'We’ll send you a notification 3 hours after pickup.','Activer le rappel':'Turn on reminder','🔔 Rappel activé : vous recevrez une notification pour noter votre panier':'🔔 Reminder on: you’ll get a notification to rate your basket','Notifications non autorisées sur ce téléphone':'Notifications not allowed on this phone','Notifications bloquées dans les réglages du téléphone':'Notifications are blocked in your phone settings',
 /* onboarding & connexion */
 'Des paniers surprise':'Surprise baskets','Les commerçants près de chez vous proposent leurs invendus à prix doux.':'Shops near you sell their unsold food at friendly prices.','Moins de gaspillage':'Less waste','Chaque panier sauvé, ce sont des kilos de nourriture qui ne finissent pas à la poubelle.':'Every basket saved is kilos of food that doesn’t end up in the bin.','Vous y gagnez aussi':'You win too','Jusqu’à −70 % sur de bons produits. Simple, local, gourmand.':'Up to −70% on great products. Simple, local, delicious.','Suivant':'Next','C’est parti':'Let’s go',
 'Bienvenue':'Welcome','Connectez-vous pour sauver des paniers près de chez vous.':'Sign in to save baskets near you.','Continuer avec Google':'Continue with Google','Continuer avec Facebook':'Continue with Facebook','Continuer avec l’e-mail':'Continue with email','Créer mon compte':'Create my account','Connexion':'Sign in','Prénom':'First name','E-mail':'Email','Mot de passe':'Password','Se connecter':'Sign in','J’ai déjà un compte':'I already have an account','Créer un compte':'Create an account','En continuant, vous acceptez nos':'By continuing, you accept our','et notre':'and our','Conditions d’utilisation':'Terms of use','Politique de confidentialité':'Privacy policy',
@@ -636,7 +637,7 @@ if(o.t=='phelp')return PO('Aide &amp; contact',`<div class="card" style="padding
 <button class="btn alt full" data-a="how" style="margin-bottom:12px">Revoir le guide de bienvenue</button>
 <a class="mrow" href="conditions.html" target="_blank" rel="noopener"><span>Conditions d’utilisation</span>${ic(IC.chev,'#8A9794')}</a><a class="mrow" href="confidentialite.html" target="_blank" rel="noopener"><span>Politique de confidentialité</span>${ic(IC.chev,'#8A9794')}</a><a class="mrow" href="supprimer-mon-compte.html" target="_blank" rel="noopener"><span>Supprimer mon compte (page web)</span>${ic(IC.chev,'#8A9794')}</a>`);
 if(o.t=='pmerch')return PO('Espace commerçant',`<div class="card" style="padding:14px;margin-top:14px">${Mc()}</div>`);
-if(o.t=='picked'){const x=db.orders.find(q=>q.id==o.id),s=x&&byId(x.sid);return`<button class="back" data-a="close" aria-label="Fermer">✕</button><div class="bd2" style="text-align:center;padding-top:70px"><div style="font-size:84px;color:#389C9A">${eiSvg('ok')}</div><h1>Retrait confirmé !</h1>${s?`<p style="margin:6px 0"><b>${esc(s.n)}</b><br><span class="mu">${pk(x.q)}</span></p>`:''}<p style="margin:16px 0">Merci d’avoir sauvé un repas. Bon appétit !</p></div><div class="bar"><button class="btn full" data-a="pickrate">Noter mon panier</button></div>`}
+if(o.t=='picked'){const x=db.orders.find(q=>q.id==o.id),s=x&&byId(x.sid);return`<button class="back" data-a="close" aria-label="Fermer">✕</button><div class="bd2" style="text-align:center;padding-top:70px"><div style="font-size:84px;color:#389C9A">${eiSvg('ok')}</div><h1>Retrait confirmé !</h1>${s?`<p style="margin:6px 0"><b>${esc(s.n)}</b><br><span class="mu">${pk(x.q)}</span></p>`:''}<p style="margin:16px 0">Merci d’avoir sauvé un repas. Bon appétit !</p>${PN()}</div><div class="bar"><button class="btn full" data-a="close">Super !</button></div>`}
 if(o.t=='review'){const x=db.orders.find(q=>q.id==o.id),s=x&&byId(x.sid);return`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>Votre avis</h1><p class="mu">${s?s.e+' '+esc(s.n):''}</p>
 <label class="lbl">Votre note</label><div id="rvst" class="rvst">${rvStars()}</div>
 <label class="lbl" for="rvc">Ajouter un commentaire (facultatif)</label><textarea id="rvc" maxlength="300" rows="4" placeholder="Qu’avez-vous pensé de votre panier ?"></textarea><p class="mu" style="margin-top:4px">300 caractères max.</p>
@@ -693,9 +694,21 @@ return`<button class="back" data-a="shop" data-i="${s.id}" aria-label="Retour">�
 <div class="row"><div style="flex:1"><label class="lbl" for="ce">Expiration</label><input id="ce" value="12/29"></div><div style="flex:1"><label class="lbl" for="cv">CVC</label><input id="cv" value="123" inputmode="numeric"></div></div>
 <div class="err" id="er" role="alert"></div></div><div class="bar"><button class="btn full" data-a="conf">Payer ${eur(tot)}</button></div>`}
 if(o.t=='ok'){const x=o.o,s=byId(x.sid);return`<div class="bd2" style="text-align:center;padding-top:40px"><div style="font-size:70px">🎉</div><h1>Merci, vous sauvez un repas !</h1>
-<p class="mu">${s.e} ${esc(s.n)} · ${pk(x.q)}<br>Retrait ${rg(x.a,x.b)}</p><div style="margin:20px 0">${qrSvg(x.code)}</div><h2 style="margin:0;justify-content:center">Code ${x.code}</h2><p class="mu">Présentez ce code au commerçant.</p></div>
+<p class="mu">${s.e} ${esc(s.n)} · ${pk(x.q)}<br>Retrait ${rg(x.a,x.b)}</p><div style="margin:20px 0">${qrSvg(x.code)}</div><h2 style="margin:0;justify-content:center">Code ${x.code}</h2><p class="mu">Présentez ce code au commerçant.</p>${PN()}</div>
 <div class="bar"><button class="btn full" data-a="goo">Voir mes commandes</button></div>`}
 if(o.t=='qr'){const x=db.orders.find(q=>q.id==o.id);return`<div class="bd2" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:calc(100% - 96px);padding-top:70px"><h1 style="text-align:center">Code ${x.code}</h1><div style="margin:18px 0 14px">${qrSvg(x.code)}</div>${WALK}<p class="mu" style="margin-top:8px">Présentez ce code au commerçant.</p></div><div class="bar"><button class="btn full" data-a="close">Fermer</button></div>`}}
+
+/* ===== Notifications push (rappel pour noter le panier, 3 h après le retrait) ===== */
+const VAPID='BASFh-F1FrmwUCike_uYPDeMHa3dar_saTO-KJDSR7Og8Awj6aCiR6eu398MYyinR6uIwbCVT1rQV5ys12kQxRU';
+const pushOK=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window&&location.protocol.startsWith('http');
+const b64u=t=>{const p='='.repeat((4-t.length%4)%4),r=atob((t+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from([...r].map(c=>c.charCodeAt(0)))};
+async function pushOn(){if(!pushOK()||!sb||!db.user)return false;
+try{if(Notification.permission=='default')await Notification.requestPermission();if(Notification.permission!='granted')return false;
+const reg=await navigator.serviceWorker.ready;let sub=await reg.pushManager.getSubscription();
+if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID)});
+const j=sub.toJSON();const{error}=await sb.from('push_subs').upsert({user_id:db.user.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,lang:db.lang||'fr'},{onConflict:'endpoint'});return !error}catch(e){return false}}
+async function pushOff(){try{if(!pushOK())return;const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub){if(sb&&db.user)await sb.from('push_subs').delete().eq('endpoint',sub.endpoint);await sub.unsubscribe()}}catch(e){}}
+function PN(){if(!pushOK()||Notification.permission!='default'||!db.prefs.notif)return'';return`<div class="card" style="margin:18px 0 0;padding:14px;text-align:left;display:flex;gap:12px;align-items:center"><span style="font-size:26px">🔔</span><div style="flex:1"><b>Un rappel pour noter votre panier ?</b><p class="mu" style="margin:2px 0 8px">Nous vous envoyons une notification 3 h après le retrait.</p><button class="btn" data-a="pushon">Activer le rappel</button></div></div>`}
 /* ===== Onboarding / rendu ===== */
 const OB=[['🥖','Des paniers surprise','Les commerçants près de chez vous proposent leurs invendus à prix doux.'],['🌍','Moins de gaspillage','Chaque panier sauvé, ce sont des kilos de nourriture qui ne finissent pas à la poubelle.'],['💚','Vous y gagnez aussi','Jusqu’à −70 % sur de bons produits. Simple, local, gourmand.']];
 function R(){const m=$('#main'),nv=$('#nav');stopScan();if(!db.user)rtSub();$('.ov')?.remove();
@@ -758,7 +771,8 @@ navigator.geolocation.getCurrentPosition(p=>{me={lat:p.coords.latitude,lng:p.coo
 case'how':ov={t:'how'};R();break;
 case'howok':{db.howSeen=db.howSeen||{};db.howSeen[db.user.id]=1;save();ov=null;R();break}
 case'pov':ov={t:i};R();break;
-case'notif':{db.prefs.notif=!db.prefs.notif;save();t.querySelector('.sw').classList.toggle('on');toast(db.prefs.notif?'🔔 Notifications activées':'🔕 Notifications désactivées');break}
+case'notif':{db.prefs.notif=!db.prefs.notif;save();t.querySelector('.sw').classList.toggle('on');if(db.prefs.notif){pushOn().then(ok=>toast(ok?'🔔 Notifications activées':Notification.permission=='denied'?'Notifications bloquées dans les réglages du téléphone':'🔔 Notifications activées'))}else{pushOff();toast('🔕 Notifications désactivées')}break}
+case'pushon':{pushOn().then(ok=>{toast(ok?'🔔 Rappel activé : vous recevrez une notification pour noter votre panier':'Notifications non autorisées sur ce téléphone');R()});break}
 case'pname':pname();break;
 case'dsh':ov={t:'delshop',id:i};R();break;
 case'mback':ov={t:'mdash'};R();break;
@@ -794,7 +808,7 @@ else if(t.dataset.sid){addPh(t.dataset.sid,[...t.files])}
 else if(t.id=='sl'){F.slot=t.value;BL()}else if(t.id=='so'){F.sort=t.value;BL()}else if(t.id=='av'){F.av=t.checked;BL()}
 else if(t.id=='nt'){db.prefs.notif=t.checked;save();toast(t.checked?'🔔 Notifications activées':'🔕 Notifications désactivées')}
 else if(t.id=='rg'){R()}});
-if('serviceWorker' in navigator&&location.protocol.startsWith('http')){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){try{navigator.serviceWorker.register('sw.js').catch(()=>{});navigator.serviceWorker.addEventListener('message',e=>{if(e.data&&e.data.rate&&db.user){ov=null;tab='o';ot='p';R()}})}catch(e){}}
 if(db.user&&!db.user.id)db.user=null;
 theme();setLang(db.lang);icoInit();R();boot();
 // Notification simulée pour un favori disponible
