@@ -242,7 +242,7 @@ textarea{font:inherit;color:#1D1D1D;background:#F8F8F8;border:1.5px solid #E4E4E
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 
 /* ===== Découvrir : nouveau style (en-tête, recherche, bannière, catégories, cartes produit) ===== */
-.dzh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 14px}
+.dzh{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:2px 0 14px}
 .dzh .row{gap:8px}
 .dzh .lang{background:#fff;border:1px solid #E8EEEE;box-shadow:0 2px 8px rgba(29,29,29,.06)}
 .dzh .lang button{color:#6B6B6B}.dzh .lang button.on{background:#389C9A;color:#fff}
@@ -582,7 +582,7 @@ return`<div class="dzc" data-a="shop" data-i="${s.id}" role="button" tabindex="0
 const secP=(t,l,all)=>`<div class="dzsh"><h2>${t}</h2>${all?'<button data-a="tab" data-i="b">Voir tout ›</button>':''}</div>`+(l.length?`<div class="dzrow">${l.map(cardZ).join('')}</div>`:'<p class="mu">Rien pour l’instant 🌱</p>');
 const DZI={boulangerie:'bread',restaurant:'fork','supermarché':'cart','pâtisserie':'cake','épicerie':'can','végétarien':'leaf'};
 function Dd(){const vg=db.prefs.diets.includes('Végétarien'),L=S.filter(s=>(!vg||s.v)&&alOk(s)),av=L.filter(s=>left(s)>0),nu=db.orders.filter(o=>o.st=='u').length;
-return`<div class="dzh"><div class="mu">📍 Maurice</div><div class="row">${eiSvg('globe')}${langSw()}<button class="dzbag" data-a="tab" data-i="o" aria-label="Mes commandes">${eiSvg('bag')}${nu?`<i>${nu}</i>`:''}</button></div></div>
+return`<div class="dzh"><div class="row">${eiSvg('globe')}${langSw()}<button class="dzbag" data-a="tab" data-i="o" aria-label="Mes commandes">${eiSvg('bag')}${nu?`<i>${nu}</i>`:''}</button></div></div>
 <div class="dzt"><h1>Bonjour ${esc(db.user.name)} 👋</h1><p>Quel panier voulez-vous sauver aujourd’hui ?</p></div>
 <button class="dzs" data-a="tab" data-i="b">${eiSvg('search')}<span>Boulangerie, pizza, légumes…</span></button>
 <div class="dzb"><div class="tx"><h2>Sauvez un panier</h2><p>Jusqu’à −70 % sur de bons produits invendus</p><button class="go" data-a="tab" data-i="b">Voir les paniers ›</button></div><div class="art" aria-hidden="true"><b>${eiSvg('basket')}</b><b>${eiSvg('bread')}</b><b>${eiSvg('leaf')}</b></div></div>
