@@ -285,6 +285,33 @@ textarea{font:inherit;color:#1D1D1D;background:#F8F8F8;border:1.5px solid #E4E4E
 .dzc .in .pl .old{font-size:12px}.dzc .in .pl .new{font-size:15px;padding:2px 8px}
 .dzc .add{margin-top:auto;background:#389C9A;color:#fff;font-weight:800;font-size:14px;padding:9px 0;border-radius:12px;text-align:center}
 .dzc .add.off{background:#E8EEEE;color:#6B6B6B}
+
+/* ===== Profil : nouveau style ===== */
+.pfh{display:flex;align-items:center;justify-content:space-between;margin:2px 0 14px}
+.pfh h1{font-size:30px;margin:0}
+.pfbell{width:46px;height:46px;border-radius:50%;background:#fff;border:1px solid #E8EEEE;box-shadow:0 4px 12px rgba(29,29,29,.08);display:flex;align-items:center;justify-content:center;color:#2B807E;flex:none}
+.pfbell .ei{width:24px;height:24px}
+.pfav{position:relative;z-index:2;margin-bottom:-52px}
+.pfav .av{width:118px;height:118px;font-size:50px;border-width:5px}
+.pfc{background:#fff;border:1px solid #ECECEC;border-radius:28px;box-shadow:0 10px 30px rgba(29,29,29,.08);padding:62px 16px 16px}
+.pfn{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.pfn .nm{font-size:20px;font-weight:800;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pfn .em{font-size:13px;color:#6B6B6B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.pfn>div:first-child{min-width:0}
+.pfbadge{display:inline-flex;align-items:center;gap:6px;background:#1D1D1D;color:#fff;font-weight:800;font-size:13px;padding:8px 12px;border-radius:12px;white-space:nowrap;flex:none}
+.pfbadge .ei{width:16px;height:16px;color:#FEDB71}
+.pfst{display:flex;gap:10px}
+.pfst .stat{flex:1;background:#fff!important;border:1px solid #E6E6E6;border-radius:16px;padding:12px 4px;box-shadow:none;text-align:center}
+.pfst .stat b{font-size:20px;color:#1D1D1D}.pfst .stat span{font-size:12px}
+.pfpr{display:flex;align-items:center;gap:12px;margin-top:14px;background:#1D1D1D;color:#fff;border-radius:18px;padding:12px 12px 12px 14px}
+.pfpr .ic{width:36px;height:36px;border-radius:50%;background:#FEDB71;color:#1D1D1D;display:flex;align-items:center;justify-content:center;flex:none}
+.pfpr .ic .ei{width:20px;height:20px}
+.pfpr .tx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.pfpr .tx b{font-size:14px}.pfpr .tx span{font-size:12px;color:#C9D6D5}
+.pfpr .go{background:#fff;color:#1D1D1D;font-weight:800;font-size:13px;padding:9px 14px;border-radius:99px;white-space:nowrap;flex:none}
+.pfl{margin-top:16px;background:#fff;border:1px solid #ECECEC;border-radius:24px;box-shadow:0 6px 22px rgba(29,29,29,.06);overflow:hidden}
+.pfl .mrow{border:0;border-radius:0;box-shadow:none;margin:0;border-bottom:1px solid #F0F0F0;min-height:58px;background:transparent}
+.pfl>:last-child{border-bottom:0}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><clipPath id="zgL"><rect x="0" y="0" width="12" height="24"/></clipPath></defs></svg>
 <div id="app"><div id="main"></div><nav id="nav" aria-label="Navigation principale"></nav></div>
@@ -402,6 +429,7 @@ const isEN=()=>db.lang==='en',LOC=()=>isEN()?'en-GB':'fr-FR';
 const CE={boulangerie:'bakery',restaurant:'restaurant','supermarché':'supermarket','pâtisserie':'pastry shop','épicerie':'grocery','végétarien':'vegetarian'};
 const cn=c=>isEN()?(CE[c]||c):c;
 const D={
+'Anti-gaspi':'Zero waste','Commerçant':'Seller','Vous êtes commerçant ?':'Are you a shop owner?','Vendez vos invendus':'Sell your unsold food','Devenir commerçant':'Become a seller','Gérez vos paniers':'Manage your baskets','Ouvrir':'Open','Demande en cours':'Request pending','En attente de validation':'Awaiting approval','Voir':'View',
 'Quel panier sauvez-vous aujourd’hui ?':'Which basket will you save today?','Sauvez un panier':'Save a basket','Jusqu’à −70 % sur de bons produits invendus':'Up to 70% off good unsold food','Voir les paniers ›':'See baskets ›','Voir tout ›':'See all ›','Catégories':'Categories',
 'Super !':'Great!','Un rappel pour noter votre panier ?':'A reminder to rate your basket?','Nous vous envoyons une notification 3 h après le retrait.':'We’ll send you a notification 3 hours after pickup.','Activer le rappel':'Turn on reminder','🔔 Rappel activé : vous recevrez une notification pour noter votre panier':'🔔 Reminder on: you’ll get a notification to rate your basket','Notifications non autorisées sur ce téléphone':'Notifications not allowed on this phone','Notifications bloquées dans les réglages du téléphone':'Notifications are blocked in your phone settings',
 /* onboarding & connexion */
@@ -653,14 +681,16 @@ const IC={person:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>
 const mrow=(i,l,a,d)=>`<button class="mrow" data-a="${a}" data-i="${d||''}">${ic(IC[i])}<span>${l}</span>${ic(IC.chev,'#8A9794')}</button>`;
 const imp=()=>{const d=db.orders.filter(o=>o.st=='d'&&byId(o.sid));return{m:d.reduce((a,o)=>a+o.q,0),e:d.reduce((a,o)=>a+(byId(o.sid).o-byId(o.sid).p)*o.q,0),c:d.reduce((a,o)=>a+o.q*byId(o.sid).kg,0)}};
 const PO=(h,b)=>`<button class="back" data-a="close" aria-label="Retour">←</button><div class="bd2" style="padding-top:64px"><h1>${h}</h1>${b}</div>`;
-function Pp(){const{m,e,c}=imp(),n=db.user.name||'?',P=db.prefs;
-return`<div style="text-align:center;padding-top:6px"><div class="av">${esc(n[0].toUpperCase())}<button class="avb" data-a="pov" data-i="pinfo" aria-label="Modifier mes informations">${ic(IC.pen).replace('width="24" height="24"','width="16" height="16"')}</button></div><h1 style="margin-top:14px">${esc(n)}</h1><p class="mu">${esc(db.user.email)}</p></div>
-<div class="row" style="margin:18px 0"><div class="stat"><b>${m}</b><span class="mu">repas sauvés</span></div><div class="stat"><b>${+c.toFixed(1)}</b><span class="mu">kg sauvés</span></div><div class="stat"><b>${eur(e)}</b><span class="mu">économisés</span></div></div>
-${mrow('person','Mes informations','pov','pinfo')}${mrow('bag','Mes commandes','tab','o')}${mrow('heart','Mes favoris','tab','f')}${mrow('trophy','Mes trophées','pov','ptro')}${mrow('leaf','Régimes &amp; allergènes','pov','pdiet')}
+function Pp(){const{m,e,c}=imp(),n=db.user.name||'?',P=db.prefs,mk=db.merch.st;
+const pr=mk=='ok'?['Espace commerçant','Gérez vos paniers','Ouvrir','mopen','']:mk=='p'?['Demande en cours','En attente de validation','Voir','pov','pmerch']:['Vous êtes commerçant ?','Vendez vos invendus','Devenir commerçant','pov','pmerch'];
+return`<div class="pfh"><h1>Profil</h1><button class="pfbell" data-a="nbell" aria-label="Notifications">${eiSvg(P.notif?'bell':'bellx')}</button></div>
+<div class="pfav"><div class="av">${esc(n[0].toUpperCase())}<button class="avb" data-a="pov" data-i="pinfo" aria-label="Modifier mes informations">${ic(IC.pen).replace('width="24" height="24"','width="16" height="16"')}</button></div></div>
+<div class="pfc"><div class="pfn"><div><div class="nm">${esc(n)}</div><span class="em">${esc(db.user.email)}</span></div><span class="pfbadge">${eiSvg('leaf')}${mk=='ok'?'Commerçant':'Anti-gaspi'}</span></div>
+<div class="pfst"><div class="stat"><b>${m}</b><span class="mu">repas sauvés</span></div><div class="stat"><b>${+c.toFixed(1)}</b><span class="mu">kg sauvés</span></div><div class="stat"><b>${eur(e)}</b><span class="mu">économisés</span></div></div>
+<div class="pfpr"><span class="ic">${eiSvg('store')}</span><div class="tx"><b>${pr[0]}</b><span>${pr[1]}</span></div><button class="go" data-a="${pr[3]}" data-i="${pr[4]}">${pr[2]}</button></div></div>
+<div class="pfl">${mrow('person','Mes informations','pov','pinfo')}${mrow('bag','Mes commandes','tab','o')}${mrow('heart','Mes favoris','tab','f')}${mrow('trophy','Mes trophées','pov','ptro')}${mrow('leaf','Régimes &amp; allergènes','pov','pdiet')}
 <button class="mrow" data-a="notif">${ic(IC.bell)}<span>Notifications</span><i class="sw ${P.notif?'on':''}"></i></button>
-${mrow('globe','Langue','pov','plang')}
-${mrow('store','Espace commerçant',db.merch.st=='ok'?'mopen':'pov',db.merch.st=='ok'?'':'pmerch')}${mrow('help','Aide &amp; contact','pov','phelp')}${mrow('logout','Se déconnecter','out')}`}
-/* ===== Overlays ===== */
+${mrow('globe','Langue','pov','plang')}${mrow('help','Aide &amp; contact','pov','phelp')}${mrow('logout','Se déconnecter','out')}</div>`}/* ===== Overlays ===== */
 function qrSvg(code){const q=qrcode(0,'M');q.addData(code);q.make();const n=q.getModuleCount();let r='';
 for(let y=0;y<n;y++)for(let x=0;x<n;x++)if(q.isDark(y,x))r+=`<rect x="${x}" y="${y}" width="1" height="1"/>`;
 return`<svg viewBox="-2 -2 ${n+4} ${n+4}" width="200" height="200" style="background:#fff;border-radius:14px" shape-rendering="crispEdges" role="img" aria-label="QR code ${code}"><g fill="#0F3D33">${r}</g></svg>`}
@@ -830,6 +860,7 @@ case'how':ov={t:'how'};R();break;
 case'howok':{db.howSeen=db.howSeen||{};db.howSeen[db.user.id]=1;save();ov=null;R();break}
 case'pov':ov={t:i};R();break;
 case'notif':{db.prefs.notif=!db.prefs.notif;save();t.querySelector('.sw').classList.toggle('on');if(db.prefs.notif){pushOn().then(ok=>toast(ok?'🔔 Notifications activées':Notification.permission=='denied'?'Notifications bloquées dans les réglages du téléphone':'🔔 Notifications activées'))}else{pushOff();toast('🔕 Notifications désactivées')}break}
+case'nbell':{db.prefs.notif=!db.prefs.notif;save();if(db.prefs.notif){pushOn().then(ok=>toast(ok?'🔔 Notifications activées':Notification.permission=='denied'?'Notifications bloquées dans les réglages du téléphone':'🔔 Notifications activées'))}else{pushOff();toast('🔕 Notifications désactivées')}R();break}
 case'pushon':{pushOn().then(ok=>{toast(ok?'🔔 Rappel activé : vous recevrez une notification pour noter votre panier':'Notifications non autorisées sur ce téléphone');R()});break}
 case'pname':pname();break;
 case'dsh':ov={t:'delshop',id:i};R();break;
