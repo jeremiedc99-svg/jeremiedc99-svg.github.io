@@ -249,7 +249,7 @@ textarea{font:inherit;color:#1D1D1D;background:#F8F8F8;border:1.5px solid #E4E4E
 .dzbag{position:relative;width:46px;height:46px;border-radius:50%;background:#fff;border:1px solid #E8EEEE;box-shadow:0 4px 12px rgba(29,29,29,.08);display:flex;align-items:center;justify-content:center;color:#2B807E;flex:none}
 .dzbag .ei{width:24px;height:24px}
 .dzbag i{position:absolute;top:-3px;right:-3px;min-width:20px;height:20px;border-radius:99px;background:#FEDB71;color:#1D1D1D;font:800 12px/20px Nunito,sans-serif;text-align:center;padding:0 5px;border:2px solid #F8F8F8;font-style:normal}
-.dzt h1{font-size:26px;line-height:1.15;margin:0}.dzt p{margin:4px 0 0;color:#6B6B6B;font-size:15px}
+.dzt{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:4px 0 0}.dzt h1{font-size:26px;line-height:1.15;margin:0}.dzt p{margin:4px 0 0;color:#6B6B6B;font-size:15px}
 .dzs{display:flex;align-items:center;gap:10px;width:100%;margin:16px 0 0;padding:14px 16px;background:#fff;border:1px solid #E8EEEE;border-radius:18px;box-shadow:0 4px 14px rgba(29,29,29,.06);color:#6B6B6B;font-size:15px;text-align:left}
 .dzs .ei,.dzs svg{width:22px;height:22px;flex:none}
 .dzb{position:relative;overflow:hidden;margin:18px 0 0;padding:20px 18px;border-radius:22px;color:#fff;background:linear-gradient(120deg,#389C9A,#2B807E);display:flex;align-items:center;gap:8px;min-height:150px}
@@ -402,7 +402,7 @@ const isEN=()=>db.lang==='en',LOC=()=>isEN()?'en-GB':'fr-FR';
 const CE={boulangerie:'bakery',restaurant:'restaurant','supermarché':'supermarket','pâtisserie':'pastry shop','épicerie':'grocery','végétarien':'vegetarian'};
 const cn=c=>isEN()?(CE[c]||c):c;
 const D={
-'Quel panier voulez-vous sauver aujourd’hui ?':'Which basket will you save today?','Sauvez un panier':'Save a basket','Jusqu’à −70 % sur de bons produits invendus':'Up to 70% off good unsold food','Voir les paniers ›':'See baskets ›','Voir tout ›':'See all ›','Catégories':'Categories',
+'Quel panier sauvez-vous aujourd’hui ?':'Which basket will you save today?','Sauvez un panier':'Save a basket','Jusqu’à −70 % sur de bons produits invendus':'Up to 70% off good unsold food','Voir les paniers ›':'See baskets ›','Voir tout ›':'See all ›','Catégories':'Categories',
 'Super !':'Great!','Un rappel pour noter votre panier ?':'A reminder to rate your basket?','Nous vous envoyons une notification 3 h après le retrait.':'We’ll send you a notification 3 hours after pickup.','Activer le rappel':'Turn on reminder','🔔 Rappel activé : vous recevrez une notification pour noter votre panier':'🔔 Reminder on: you’ll get a notification to rate your basket','Notifications non autorisées sur ce téléphone':'Notifications not allowed on this phone','Notifications bloquées dans les réglages du téléphone':'Notifications are blocked in your phone settings',
 /* onboarding & connexion */
 'Des paniers surprise':'Surprise baskets','Les commerçants près de chez vous proposent leurs invendus à prix doux.':'Shops near you sell their unsold food at friendly prices.','Moins de gaspillage':'Less waste','Chaque panier sauvé, ce sont des kilos de nourriture qui ne finissent pas à la poubelle.':'Every basket saved is kilos of food that doesn’t end up in the bin.','Vous y gagnez aussi':'You win too','Jusqu’à −70 % sur de bons produits. Simple, local, gourmand.':'Up to −70% on great products. Simple, local, delicious.','Suivant':'Next','C’est parti':'Let’s go',
@@ -582,8 +582,7 @@ return`<div class="dzc" data-a="shop" data-i="${s.id}" role="button" tabindex="0
 const secP=(t,l,all)=>`<div class="dzsh"><h2>${t}</h2>${all?'<button data-a="tab" data-i="b">Voir tout ›</button>':''}</div>`+(l.length?`<div class="dzrow">${l.map(cardZ).join('')}</div>`:'<p class="mu">Rien pour l’instant 🌱</p>');
 const DZI={boulangerie:'bread',restaurant:'fork','supermarché':'cart','pâtisserie':'cake','épicerie':'can','végétarien':'leaf'};
 function Dd(){const vg=db.prefs.diets.includes('Végétarien'),L=S.filter(s=>(!vg||s.v)&&alOk(s)),av=L.filter(s=>left(s)>0),nu=db.orders.filter(o=>o.st=='u').length;
-return`<div class="dzh"><div class="row">${eiSvg('globe')}${langSw()}<button class="dzbag" data-a="tab" data-i="o" aria-label="Mes commandes">${eiSvg('bag')}${nu?`<i>${nu}</i>`:''}</button></div></div>
-<div class="dzt"><h1>Bonjour ${esc(db.user.name)} 👋</h1><p>Quel panier voulez-vous sauver aujourd’hui ?</p></div>
+return`<div class="dzt"><div><h1>Bonjour ${esc(db.user.name)} 👋</h1><p>Quel panier sauvez-vous aujourd’hui ?</p></div><button class="dzbag" data-a="tab" data-i="o" aria-label="Mes commandes">${eiSvg('bag')}${nu?`<i>${nu}</i>`:''}</button></div>
 <button class="dzs" data-a="tab" data-i="b">${eiSvg('search')}<span>Boulangerie, pizza, légumes…</span></button>
 <div class="dzb"><div class="tx"><h2>Sauvez un panier</h2><p>Jusqu’à −70 % sur de bons produits invendus</p><button class="go" data-a="tab" data-i="b">Voir les paniers ›</button></div><div class="art" aria-hidden="true"><b>${eiSvg('basket')}</b><b>${eiSvg('bread')}</b><b>${eiSvg('leaf')}</b></div></div>
 <div class="dzsh"><h2>Catégories</h2></div><div class="dzcat">${CATS.map(c=>`<button data-a="dzcat" data-i="${c}"><span>${eiSvg(DZI[c]||'basket')}</span>${cap(c)}</button>`).join('')}</div>`+(L.length?
