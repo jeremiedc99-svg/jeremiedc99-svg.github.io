@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="color-scheme" content="light"><meta name="theme-color" content="#389C9A"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<html lang="fr" data-theme="light"><head><meta charset="utf-8"><meta name="color-scheme" content="light"><meta name="theme-color" content="#FFFFFF"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Zero Gaspi</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -766,7 +766,9 @@ async function pushOff(){try{if(!pushOK())return;const reg=await navigator.servi
 function PN(){if(!pushOK()||Notification.permission!='default'||!db.prefs.notif)return'';return`<div class="card" style="margin:18px 0 0;padding:14px;text-align:left;display:flex;gap:12px;align-items:center"><span style="font-size:26px">🔔</span><div style="flex:1"><b>Un rappel pour noter votre panier ?</b><p class="mu" style="margin:2px 0 8px">Nous vous envoyons une notification 3 h après le retrait.</p><button class="btn" data-a="pushon">Activer le rappel</button></div></div>`}
 /* ===== Onboarding / rendu ===== */
 const OB=[['🥖','Des paniers surprise','Les commerçants près de chez vous proposent leurs invendus à prix doux.'],['🌍','Moins de gaspillage','Chaque panier sauvé, ce sont des kilos de nourriture qui ne finissent pas à la poubelle.'],['💚','Vous y gagnez aussi','Jusqu’à −70 % sur de bons produits. Simple, local, gourmand.']];
-function R(){const m=$('#main'),nv=$('#nav');stopScan();if(!db.user)rtSub();$('.ov')?.remove();
+/* Couleur de la barre d’état : teal seulement sur Parcourir (bandeau teal), blanche ailleurs */
+function tcol(){try{const c=db.user&&!ov&&tab=='b'?'#389C9A':db.user&&!ov&&tab=='p'?'#F4F4F2':'#FFFFFF';document.querySelectorAll('meta[name=theme-color]').forEach(x=>x.setAttribute('content',c))}catch(e){}}
+function R(){const m=$('#main'),nv=$('#nav');stopScan();tcol();if(!db.user)rtSub();$('.ov')?.remove();
 if(!db.user){nv.style.display='none';m.style.padding=0;m.innerHTML=ob<3?`<div class="ob" style="min-height:100%;position:relative"><div class="langtop">${langSw('lt')}</div><div class="em">${OB[ob][0]}</div><h1>${OB[ob][1]}</h1><p class="mu">${OB[ob][2]}</p><div class="dots">${OB.map((_,i)=>`<span class="${i==ob?'on':''}"></span>`).join('')}</div><button class="btn full" data-a="onx">${ob<2?'Suivant':'C’est parti'}</button></div>`
 :`<div class="ob" style="min-height:100%;align-items:stretch;text-align:left;justify-content:center;gap:0;position:relative"><div class="langtop">${langSw('lt')}</div><img src="icon-512.png" alt="Zero Gaspi" style="display:block;margin:0 auto;width:104px;height:104px;border-radius:26px;box-shadow:0 8px 24px rgba(43,128,126,.25)"><h1 style="text-align:center;margin-top:14px">Bienvenue</h1><p class="mu" style="text-align:center;margin-bottom:8px">Connectez-vous pour sauver des paniers près de chez vous.</p>
 <button class="sso g" data-a="oauth" data-i="google">${GOOGLE_G}<span>Continuer avec Google</span></button>
