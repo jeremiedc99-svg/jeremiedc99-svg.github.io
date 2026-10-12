@@ -240,6 +240,51 @@ textarea{font:inherit;color:#1D1D1D;background:#F8F8F8;border:1.5px solid #E4E4E
 .langtop{position:absolute;top:14px;right:14px;z-index:3}
 .lrow{border-bottom:1px solid #F0F0F0}.lrow:last-child{border-bottom:0}.lrow .ei{color:#389C9A;width:22px;height:22px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+
+/* ===== Découvrir : nouveau style (en-tête, recherche, bannière, catégories, cartes produit) ===== */
+.dzh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 14px}
+.dzh .row{gap:8px}
+.dzh .lang{background:#fff;border:1px solid #E8EEEE;box-shadow:0 2px 8px rgba(29,29,29,.06)}
+.dzh .lang button{color:#6B6B6B}.dzh .lang button.on{background:#389C9A;color:#fff}
+.dzbag{position:relative;width:46px;height:46px;border-radius:50%;background:#fff;border:1px solid #E8EEEE;box-shadow:0 4px 12px rgba(29,29,29,.08);display:flex;align-items:center;justify-content:center;color:#2B807E;flex:none}
+.dzbag .ei{width:24px;height:24px}
+.dzbag i{position:absolute;top:-3px;right:-3px;min-width:20px;height:20px;border-radius:99px;background:#FEDB71;color:#1D1D1D;font:800 12px/20px Nunito,sans-serif;text-align:center;padding:0 5px;border:2px solid #F8F8F8;font-style:normal}
+.dzt h1{font-size:26px;line-height:1.15;margin:0}.dzt p{margin:4px 0 0;color:#6B6B6B;font-size:15px}
+.dzs{display:flex;align-items:center;gap:10px;width:100%;margin:16px 0 0;padding:14px 16px;background:#fff;border:1px solid #E8EEEE;border-radius:18px;box-shadow:0 4px 14px rgba(29,29,29,.06);color:#6B6B6B;font-size:15px;text-align:left}
+.dzs .ei,.dzs svg{width:22px;height:22px;flex:none}
+.dzb{position:relative;overflow:hidden;margin:18px 0 0;padding:20px 18px;border-radius:22px;color:#fff;background:linear-gradient(120deg,#389C9A,#2B807E);display:flex;align-items:center;gap:8px;min-height:150px}
+.dzb .tx{flex:1;min-width:0;position:relative;z-index:2}
+.dzb h2{display:block;margin:0;font-size:22px;line-height:1.15;color:#fff}
+.dzb p{margin:6px 0 14px;font-size:14px;color:#E6F6F5;line-height:1.35}
+.dzb .go{display:inline-flex;align-items:center;gap:6px;background:#fff;color:#2B807E;font-weight:800;font-size:14px;padding:10px 16px;border-radius:99px;white-space:nowrap}
+.dzb .art{position:relative;flex:none;width:118px;height:118px;z-index:1}
+.dzb .art b{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.dzb .art b:nth-child(1){width:92px;height:92px;right:0;top:12px;background:#FEDB71;color:#2B807E}
+.dzb .art b:nth-child(2){width:50px;height:50px;left:0;top:0;background:#fff;color:#389C9A}
+.dzb .art b:nth-child(3){width:44px;height:44px;left:8px;bottom:0;background:rgba(255,255,255,.28);color:#fff}
+.dzb .art .ei{width:60%;height:60%}
+.dzb:before{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.09);right:-50px;top:-60px}
+.dzsh{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}
+.dzsh h2{margin:0}
+.dzsh button{color:#2B807E;font-weight:800;font-size:14px;white-space:nowrap}
+.dzcat{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px;scroll-snap-type:x mandatory}
+.dzcat button{flex:none;width:82px;scroll-snap-align:start;background:#fff;border:1px solid #E8EEEE;border-radius:18px;box-shadow:0 4px 12px rgba(29,29,29,.06);padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:13px;color:#1D1D1D}
+.dzcat button span{width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#2B807E}
+.dzcat button:nth-child(odd) span{background:#E3F3F2}.dzcat button:nth-child(even) span{background:#FFF4CF}
+.dzcat .ei{width:26px;height:26px}
+.dzrow{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px;margin:0 -2px;scroll-snap-type:x mandatory}
+.dzc{flex:none;width:156px;scroll-snap-align:start;background:#fff;border:1px solid #E8EEEE;border-radius:20px;box-shadow:0 6px 16px rgba(29,29,29,.08);overflow:hidden;cursor:pointer;display:flex;flex-direction:column;color:#1D1D1D}
+.dzc .im{position:relative;height:112px;display:flex;align-items:center;justify-content:center;font-size:44px;color:#fff}
+.dzc .im .heart{width:34px;height:34px;top:6px;right:6px;font-size:16px}
+.dzc .im .bd2b{position:absolute;left:8px;top:8px;background:#FEDB71;color:#1D1D1D;font-weight:800;font-size:11px;padding:3px 8px;border-radius:99px;white-space:nowrap}
+.dzc .im .bd2b.out{background:#555;color:#fff}
+.dzc .in{padding:10px 10px 12px;display:flex;flex-direction:column;gap:3px;flex:1}
+.dzc .in b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dzc .in .m{font-size:12px;color:#6B6B6B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dzc .in .pl{margin:2px 0 6px}
+.dzc .in .pl .old{font-size:12px}.dzc .in .pl .new{font-size:15px;padding:2px 8px}
+.dzc .add{margin-top:auto;background:#389C9A;color:#fff;font-weight:800;font-size:14px;padding:9px 0;border-radius:12px;text-align:center}
+.dzc .add.off{background:#E8EEEE;color:#6B6B6B}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><clipPath id="zgL"><rect x="0" y="0" width="12" height="24"/></clipPath></defs></svg>
 <div id="app"><div id="main"></div><nav id="nav" aria-label="Navigation principale"></nav></div>
@@ -357,6 +402,7 @@ const isEN=()=>db.lang==='en',LOC=()=>isEN()?'en-GB':'fr-FR';
 const CE={boulangerie:'bakery',restaurant:'restaurant','supermarché':'supermarket','pâtisserie':'pastry shop','épicerie':'grocery','végétarien':'vegetarian'};
 const cn=c=>isEN()?(CE[c]||c):c;
 const D={
+'Quel panier voulez-vous sauver aujourd’hui ?':'Which basket will you save today?','Sauvez un panier':'Save a basket','Jusqu’à −70 % sur de bons produits invendus':'Up to 70% off good unsold food','Voir les paniers ›':'See baskets ›','Voir tout ›':'See all ›','Catégories':'Categories',
 'Super !':'Great!','Un rappel pour noter votre panier ?':'A reminder to rate your basket?','Nous vous envoyons une notification 3 h après le retrait.':'We’ll send you a notification 3 hours after pickup.','Activer le rappel':'Turn on reminder','🔔 Rappel activé : vous recevrez une notification pour noter votre panier':'🔔 Reminder on: you’ll get a notification to rate your basket','Notifications non autorisées sur ce téléphone':'Notifications not allowed on this phone','Notifications bloquées dans les réglages du téléphone':'Notifications are blocked in your phone settings',
 /* onboarding & connexion */
 'Des paniers surprise':'Surprise baskets','Les commerçants près de chez vous proposent leurs invendus à prix doux.':'Shops near you sell their unsold food at friendly prices.','Moins de gaspillage':'Less waste','Chaque panier sauvé, ce sont des kilos de nourriture qui ne finissent pas à la poubelle.':'Every basket saved is kilos of food that doesn’t end up in the bin.','Vous y gagnez aussi':'You win too','Jusqu’à −70 % sur de bons produits. Simple, local, gourmand.':'Up to −70% on great products. Simple, local, delicious.','Suivant':'Next','C’est parti':'Let’s go',
@@ -530,9 +576,18 @@ return`<div class="card" data-a="shop" data-i="${s.id}" role="button" tabindex="
 const sec=(t,l)=>`<h2>${t}</h2>`+(l.length?`<div class="hs">${l.map(cardH).join('')}</div>`:'<p class="mu">Rien pour l’instant 🌱</p>');
 const empty=(e,t,s)=>`<div class="empty"><b>${e}</b><h3>${t}</h3><p>${s}</p></div>`;
 /* ===== Écrans ===== */
-function Dd(){const vg=db.prefs.diets.includes('Végétarien'),L=S.filter(s=>(!vg||s.v)&&alOk(s)),av=L.filter(s=>left(s)>0);
-return`<div class="hero"><div class="row sp"><div class="mu">📍 Maurice</div><img src="icon-192.png" alt="Zero Gaspi" style="width:44px;height:44px;border-radius:12px"></div><h1>Bonjour ${esc(db.user.name)} 👋</h1><p style="opacity:.9">Sauvez un panier surprise, régalez-vous</p><div class="row langrow">${eiSvg('globe')}<b>Langue</b>${langSw()}</div></div>`+(L.length?
-sec('⏳ Sauvés bientôt',[...av].sort((a,b)=>a.t1-b.t1).slice(0,6))+sec('✨ Nouveautés',[...L].sort((a,b)=>b.cr-a.cr).slice(0,6))+sec('🔥 Dernière chance',av.filter(s=>left(s)<=2))+sec('💸 Petits prix',[...av].sort((a,b)=>a.p-b.p).slice(0,6)):empty('🌱','Pas encore de paniers','Les commerçants publient leurs paniers chaque jour. Revenez bientôt !'))}
+function cardZ(s){const l=left(s),f=db.favs.includes(s.id),[a,b]=slot(s);
+return`<div class="dzc" data-a="shop" data-i="${s.id}" role="button" tabindex="0" aria-label="${esc(s.n)}"><div class="im" style="background:${bg(s)}"><span aria-hidden="true">${s.ph&&s.ph[0]?'':s.e}</span><span class="bd2b ${l?'':'out'}">${l?l+' restant'+(l>1?'s':''):'Épuisé'}</span><button class="heart" data-a="fav" data-i="${s.id}" aria-label="${f?'Retirer des':'Ajouter aux'} favoris">${f?'❤️':'🤍'}</button></div>
+<div class="in"><b>${esc(s.n)}</b><span class="m">${cap(s.c)} · ${sv(1,12)} ${s.r}</span><span class="m">🕒 ${rg(a,b)}</span><div class="pl"><span class="old">${eur(s.o)}</span><span class="new">${eur(s.p)}</span></div><span class="add ${l?'':'off'}">${l?'Réserver':'Épuisé'}</span></div></div>`}
+const secP=(t,l,all)=>`<div class="dzsh"><h2>${t}</h2>${all?'<button data-a="tab" data-i="b">Voir tout ›</button>':''}</div>`+(l.length?`<div class="dzrow">${l.map(cardZ).join('')}</div>`:'<p class="mu">Rien pour l’instant 🌱</p>');
+const DZI={boulangerie:'bread',restaurant:'fork','supermarché':'cart','pâtisserie':'cake','épicerie':'can','végétarien':'leaf'};
+function Dd(){const vg=db.prefs.diets.includes('Végétarien'),L=S.filter(s=>(!vg||s.v)&&alOk(s)),av=L.filter(s=>left(s)>0),nu=db.orders.filter(o=>o.st=='u').length;
+return`<div class="dzh"><div class="mu">📍 Maurice</div><div class="row">${eiSvg('globe')}${langSw()}<button class="dzbag" data-a="tab" data-i="o" aria-label="Mes commandes">${eiSvg('bag')}${nu?`<i>${nu}</i>`:''}</button></div></div>
+<div class="dzt"><h1>Bonjour ${esc(db.user.name)} 👋</h1><p>Quel panier voulez-vous sauver aujourd’hui ?</p></div>
+<button class="dzs" data-a="tab" data-i="b">${eiSvg('search')}<span>Boulangerie, pizza, légumes…</span></button>
+<div class="dzb"><div class="tx"><h2>Sauvez un panier</h2><p>Jusqu’à −70 % sur de bons produits invendus</p><button class="go" data-a="tab" data-i="b">Voir les paniers ›</button></div><div class="art" aria-hidden="true"><b>${eiSvg('basket')}</b><b>${eiSvg('bread')}</b><b>${eiSvg('leaf')}</b></div></div>
+<div class="dzsh"><h2>Catégories</h2></div><div class="dzcat">${CATS.map(c=>`<button data-a="dzcat" data-i="${c}"><span>${eiSvg(DZI[c]||'basket')}</span>${cap(c)}</button>`).join('')}</div>`+(L.length?
+secP('⏳ Sauvés bientôt',[...av].sort((a,b)=>a.t1-b.t1).slice(0,6),1)+secP('✨ Nouveautés',[...L].sort((a,b)=>b.cr-a.cr).slice(0,6),1)+secP('🔥 Dernière chance',av.filter(s=>left(s)<=2))+secP('💸 Petits prix',[...av].sort((a,b)=>a.p-b.p).slice(0,6),1):empty('🌱','Pas encore de paniers','Les commerçants publient leurs paniers chaque jour. Revenez bientôt !'))}
 let me=null;
 const rad=x=>x*Math.PI/180;
 const dk=s=>me&&s.lat!=null&&s.lng!=null?6371*2*Math.asin(Math.sqrt(Math.sin(rad(s.lat-me.lat)/2)**2+Math.cos(rad(me.lat))*Math.cos(rad(s.lat))*Math.sin(rad(s.lng-me.lng)/2)**2)):null;
@@ -744,6 +799,7 @@ case'shop':qty=1;ov={t:'shop',id:i};R();loadRev(i);break;
 case'close':ov=retMap?{t:'map'}:null;retMap=false;addMode=false;R();break;
 case'pin':{const s=byId(i);$('#pc').innerHTML=cardL(s);break}
 case'cat':F.cat=F.cat==i?'':i;R();break;
+case'dzcat':F.cat=i;tab='b';ov=null;R();break;
 case'view':F.view=i;R();break;
 case'ot':ot=i;R();break;
 case'qm':qty=Math.max(1,qty-1);R();break;
