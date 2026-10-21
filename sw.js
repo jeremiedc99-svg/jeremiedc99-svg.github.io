@@ -7,6 +7,6 @@ e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(C).then(x=
 
 // Notification push : rappel pour noter son panier
 self.addEventListener('push',e=>{let d={};try{d=e.data.json()}catch(x){}
-e.waitUntil(self.registration.showNotification(d.title||'Zero Gaspi',{body:d.body||'',icon:'icon-192.png',badge:'icon-192.png',tag:d.tag||'zg-rate',data:{url:d.url||'/?rate=1',msg:d.msg||'',who:d.who||''}}))});
+e.waitUntil(self.registration.showNotification(d.title||'Zero Gaspi',{body:d.body||'',icon:'icon-192.png',badge:'icon-192.png',tag:d.tag||'zg-rate',data:{url:d.url||'/?rate=1',msg:d.msg||'',who:d.who||'',open:d.open||''}}))});
 self.addEventListener('notificationclick',e=>{e.notification.close();const n=e.notification.data||{},u=n.url||'/?rate=1';
-e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(L=>{for(const c of L){if('focus' in c){c.postMessage(n.msg?{msg:n.msg,who:n.who}:{rate:1});return c.focus()}}return self.clients.openWindow(u)}))});
+e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(L=>{for(const c of L){if('focus' in c){c.postMessage(n.msg?{msg:n.msg,who:n.who}:n.open?{open:n.open}:{rate:1});return c.focus()}}return self.clients.openWindow(u)}))});
